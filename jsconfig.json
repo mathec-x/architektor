@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "moduleResolution": "node",
+        "module": "ESNext",
+        "target": "ES2024",
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "#core/*": [
+                "./src/*.js"
+            ]
+        },
+    }
+}

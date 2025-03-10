@@ -1,0 +1,33 @@
+{
+    "src": {
+        "config": {
+            "database.config.ts": "Database configuration",
+            "app.config.ts": "Application configuration"
+        },
+        "controllers": {
+            "user.controller.ts": "Controller for handling user-related requests",
+            "product.controller.ts": "Controller for handling product-related requests"
+        },
+        "middlewares": {
+            "auth.middleware.ts": "Middleware for authentication",
+            "error-handler.middleware.ts": "Middleware for error handling"
+        },
+        "models": {
+            "user.model.ts": "Model representing the user entity",
+            "product.model.ts": "Model representing the product entity"
+        },
+        "routes": {
+            "user.routes.ts": "Routes for user-related endpoints",
+            "product.routes.ts": "Routes for product-related endpoints"
+        },
+        "services": {
+            "user.service.ts": "Service for business logic related to users",
+            "product.service.ts": "Service for business logic related to products"
+        },
+        "utils": {
+            "date.util.ts": "Utility functions for date manipulation",
+            "string.util.ts": "Utility functions for string manipulation"
+        },
+        "main.ts": "Application entry point"
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "./package.json"
+            ],
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "architecture": {
+                        "type": "string",
+                        "description": "Architecture type for the project.",
+                        "enum": [
+                            "clean",
+                            "hexagonal",
+                            "mvc",
+                            "serverless",
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}

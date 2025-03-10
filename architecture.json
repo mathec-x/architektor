@@ -1,0 +1,9 @@
+{
+  "src": {
+    "prompt.js": "Some Consoles functions",
+    "logger.js": "Custom Logger Application functions",
+    "installers.js": "Installers functions",
+    "fileSystem.js": "Core File System functions",
+    "constants.js": "Constants"
+  }
+}

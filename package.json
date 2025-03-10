@@ -1,0 +1,41 @@
+{
+  "name": "architektor",
+  "version": "1.0.0",
+  "description": "CLI para geração de componentes em arquiteturas DDD, hexagonal ou Clean Architecture ...",
+  "main": "./bin/index.js",
+  "scripts": {
+    "start": "node ./bin/index.js",
+    "watch": "node --watch ./bin/index.js"
+  },
+  "keywords": [
+    "architecture",
+    "cli",
+    "ddd",
+    "hexagonal",
+    "clean architecture",
+    "mvc"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "architektor": "./bin/index.js"
+  },
+  "type": "module",
+  "imports": {
+    "#core/*": [
+      "./src/*.js"
+    ]
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0"
+  },
+  "files": [
+    "bin",
+    "src"
+  ]
+}

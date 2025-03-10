@@ -1,0 +1,36 @@
+{
+    "src": {
+        "config": {
+            "databaseConfig.ts": "Database configuration",
+            "appConfig.ts": "Application configuration"
+        },
+        "functions": {
+            "createUser": {
+                "handler.ts": "Handler for creating a user",
+                "index.ts": "Entry point for the createUser function",
+                "schema.ts": "Schema for input validation"
+            },
+            "updateUser": {
+                "handler.ts": "Handler for updating a user",
+                "index.ts": "Entry point for the updateUser function",
+                "schema.ts": "Schema for input validation"
+            },
+            "deleteUser": {
+                "handler.ts": "Handler for deleting a user",
+                "index.ts": "Entry point for the deleteUser function",
+                "schema.ts": "Schema for input validation"
+            }
+        },
+        "models": {
+            "userModel.ts": "Model representing the user entity"
+        },
+        "services": {
+            "userService.ts": "Service for business logic related to users"
+        },
+        "utils": {
+            "dateUtil.ts": "Utility functions for date manipulation",
+            "stringUtil.ts": "Utility functions for string manipulation"
+        }
+    },
+    "serverless.yml": "Serverless framework configuration file"
+}
