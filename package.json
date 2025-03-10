@@ -1,6 +1,6 @@
 {
   "name": "architektor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI para geração de componentes em arquiteturas DDD, hexagonal ou Clean Architecture ...",
   "main": "./bin/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "license": "ISC",
   "bin": {
-    "architektor": "./bin/index.js"
+    "architektor": "bin/index.js"
   },
   "type": "module",
   "imports": {
@@ -40,6 +40,7 @@
   },
   "files": [
     "bin",
-    "src"
+    "src",
+    "patterns"
   ]
 }
