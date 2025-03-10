@@ -15,7 +15,11 @@
     "clean architecture",
     "mvc"
   ],
-  "author": "",
+  "author": "Matheus Corrêa",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathec-x/architektor.git"
+  },
   "license": "ISC",
   "bin": {
     "architektor": "./bin/index.js"
