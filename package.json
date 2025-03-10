@@ -1,6 +1,6 @@
 {
   "name": "architektor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI para geração de componentes em arquiteturas DDD, hexagonal ou Clean Architecture ...",
   "main": "./bin/index.js",
   "scripts": {

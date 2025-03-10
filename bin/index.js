@@ -91,6 +91,8 @@ program
       exit(0);
     }
 
+    // const currentStructure = fileSystem.readStructure();
+
     const structure = fileSystem.readStructure();
 
     logger.warn("The new Structure will be:");
@@ -142,6 +144,9 @@ program
     }
     if (await prompt.confirm(prompts.eslintInstall)) {
       await installers.eslint();
+    }
+    if (await prompt.confirm(prompts.prettierInstall)) {
+      await installers.prettier();
     }
     logger.logGroupEnd();
     exit(0);

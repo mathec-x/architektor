@@ -5,4 +5,5 @@ export const prompts = {
     `Do you want to install the packages ${list} for typescript?`,
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
+  prettierInstall: "Do you want to configure prettierrc?",
 };
