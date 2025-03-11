@@ -52,6 +52,7 @@ program
     "<type>",
     `choose one of the following: ${fileSystem.showAllowedArchitectures()}`
   )
+  .option("-v, --verbose", "Print more information")
   .action(async (type) => {
     const logger = new Logger("push");
 
@@ -83,6 +84,7 @@ program
   .command("generate")
   .version(version)
   .description("Apply structure from file architecture.json")
+  .option("-v, --verbose", "Print more information")
   .action(async () => {
     const logger = new Logger("generate");
     logger.logGroup();
@@ -92,11 +94,7 @@ program
       );
       exit(0);
     }
-
-    // const currentStructure = fileSystem.readStructure();
-
-    const structure = fileSystem.readStructure();
-
+    const structure = fileSystem.readCurrentFileStructure();
     logger.warn("The new Structure will be:");
     console.log("\n");
     fileSystem.printStructure(structure);
@@ -114,8 +112,9 @@ program
 program
   .command("print")
   .version(version)
+  .option("-v, --verbose", "Print more information")
   .description("Print current structure file architecture.json")
-  .action(async (type) => {
+  .action(async () => {
     const logger = new Logger("print");
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
@@ -124,7 +123,7 @@ program
       );
       exit(0);
     }
-    const structure = fileSystem.readStructure(type);
+    const structure = fileSystem.readCurrentFileStructure();
     console.log("\n");
     fileSystem.printStructure(structure);
     console.log("\n");
@@ -133,11 +132,18 @@ program
   });
 
 program
-  .command("init typescript")
+  .command("init")
+  .argument("<type>", "", String, "typescript")
+  .option("-v, --verbose", "Print more information")
   .version(version)
   .description("Setup all dependencies for backend TypeScript project")
-  .action(async () => {
-    const logger = new Logger("init typescript");
+  .action(async (type) => {
+    const logger = new Logger(`init ${type}`);
+    const alloweds = ["typescript", "ts"];
+    if (!alloweds.includes(type)) {
+      logger.error(`Invalid type: '${type}' allowed types: ${alloweds}`);
+      exit(0);
+    }
 
     logger.logGroup();
     if (await prompt.confirm(prompts.tsInstall(installers.libs.ts))) {
