@@ -5,10 +5,18 @@ export const prompts = {
     `Do you want to install the packages ${list} for typescript?`,
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
-  prettierInstall: "Do you want to configure prettierrc?",
+  prettierInstall:
+    "Do you want to add some configurations like prettierrc, .gitignore... ?",
 };
 
 export const settings = {
+  prettier: {
+    semi: true,
+    singleQuote: true,
+    trailingComma: "all",
+    printWidth: 120,
+    tabWidth: 2,
+  },
   editorSettings: {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -24,7 +32,6 @@ export const settings = {
         "pnpm*",
         "bun*",
         "prettier*",
-        ".eslintrc.js",
         ".prettier*",
         ".env*",
         ".git*",

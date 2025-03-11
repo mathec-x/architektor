@@ -15,16 +15,15 @@ export class Installers {
   }
 
   async prettier() {
-    this.logger.info("Creating .prettierrc...");
-    this.fileManager.writeJsonFile(".prettierrc", {
-      semi: true,
-      singleQuote: true,
-      trailingComma: "all",
-      printWidth: 120,
-      tabWidth: 2,
-    });
+    if (!this.fileManager.isFile(".prettierrc")) {
+      this.logger.info("Creating .prettierrc...");
+      this.fileManager.writeJsonFile(".prettierrc", settings.prettier);
+    }
 
-    this.logger.info("Prettier installed successfully!");
+    if (!this.fileManager.isFile(".gitignore")) {
+      this.logger.info("Creating .gitignore...");
+      this.fileManager.writeTextFile(".gitignore", "node_modules\n");
+    }
   }
 
   async eslint() {
