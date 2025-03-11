@@ -30,12 +30,6 @@ export class FileSystem {
     return this.fileManager.exists(path);
   }
 
-  listCurrentArchitectureSrc() {
-    this.logger.debug("Checking current architecture...");
-    const path = resolve(cwd() + `/src`);
-    return this.fileManager.readdir(path);
-  }
-
   /**
    *
    * @param {string} type
@@ -66,7 +60,7 @@ export class FileSystem {
   /**
    * @returns {object}
    */
-  readStructure() {
+  readCurrentFileStructure() {
     try {
       const path = resolve(cwd() + `/architecture.json`);
       this.logger.info(`Reading from ${path}`);
@@ -110,9 +104,11 @@ export class FileSystem {
         colors.dim,
         key === lastKey ? path.replace(/(├)(?!.*\1)/, "└") : path,
         colors.reset,
-        colors.bright,
         extname(key).length === 0 ? `${key}/` : key,
         colors.reset,
+        typeof value === "string"
+          ? `${colors.green}${colors.tab(9)}${value}${colors.reset}`
+          : "",
       ].join("");
       stdout.write(line + "\n");
       if (typeof value === "object") {
@@ -140,34 +136,19 @@ export class FileSystem {
 
   /** @private */
   #writeRecursive(structure, path = "") {
+    if (typeof structure === "string") {
+      this.logger.verbose(`Structure is string for path: ${path}`);
+      return;
+    }
+
     for (const [key, value] of Object.entries(structure)) {
       const currentPath = join(path, key);
-      if (typeof value === "string") {
-        this.#makeFile(currentPath, `// ${value}`);
+      if (typeof value === "string" && !!extname(key)) {
+        this.fileManager.makeFileIfNotExists(currentPath, `// ${value}`);
       } else {
-        this.#makeDir(currentPath);
+        this.fileManager.makeDirIfNotExists(currentPath);
         this.#writeRecursive(value, currentPath);
       }
-    }
-  }
-
-  /** @private */
-  #makeDir(path) {
-    if (!this.fileManager.exists(path)) {
-      this.logger.debug(`Creating ${path}`);
-      this.fileManager.mkdir(path);
-    } else {
-      this.logger.verbose(`Directory ${path} already exists`);
-    }
-  }
-
-  /** @private */
-  #makeFile(path, value) {
-    if (!this.fileManager.isFile(path)) {
-      this.logger.info(`Add file ${path}`);
-      this.fileManager.writeTextFile(path, value);
-    } else {
-      this.logger.verbose(`File ${path} already exists`);
     }
   }
 }
