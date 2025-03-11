@@ -81,4 +81,22 @@ export class FileManager {
   mkdir(path, options = {}) {
     return mkdirSync(path, options);
   }
+
+  makeDirIfNotExists(path) {
+    if (!this.exists(path)) {
+      this.logger.info(`Creating ${path}`);
+      this.mkdir(path);
+    } else {
+      this.logger.verbose(`Directory ${path} already exists`);
+    }
+  }
+
+  makeFileIfNotExists(path, value) {
+    if (!this.isFile(path)) {
+      this.logger.info(`Add file ${path}`);
+      this.writeTextFile(path, value);
+    } else {
+      this.logger.verbose(`File ${path} already exists`);
+    }
+  }
 }
