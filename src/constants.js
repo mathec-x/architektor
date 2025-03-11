@@ -1,4 +1,5 @@
 export const prompts = {
+  continueGenerate: "Do you want to continue?",
   alreadyExist:
     "A structure already exists in the repository, Do you want to overwrite file architecture.json?",
   tsInstall: (list) =>
@@ -24,6 +25,7 @@ export const settings = {
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
+      "Docker*": "Docker*, docker*, .docker*",
       "package.json": [
         "architecture.json",
         ".nvmrc",
