@@ -1,4 +1,4 @@
-import { env, pid } from "process";
+import { argv, pid } from "process";
 import { inspect } from "util";
 
 export const colors = {
@@ -10,6 +10,7 @@ export const colors = {
   blink: "\x1b[5m",
   reverse: "\x1b[7m",
   hidden: "\x1b[8m",
+  striked: "\x1b[9m",
   red: "\x1b[31m",
   green: "\x1b[32m",
   yellow: "\x1b[33m",
@@ -18,6 +19,7 @@ export const colors = {
   cyan: "\x1b[36m",
   white: "\x1b[37m",
   gray: "\x1b[90m",
+  tab: (n) => "\r" + "\t".repeat(n),
 };
 
 function debug(level, object) {
@@ -38,7 +40,8 @@ const parsePascalCase = (label) => {
 };
 
 export class Logger {
-  constructor(name, defaultlevel = env.LOG_LEVEL || "VERBOSE") {
+  constructor(name) {
+    const defaultlevel = argv.includes("-v") ? "VERBOSE" : "INFO";
     this.name = parsePascalCase(name);
     this.colors = {
       ALERT: colors.cyan,
@@ -94,27 +97,39 @@ export class Logger {
   }
 
   verbose(message, data) {
-    this.log(message, data, "VERBOSE");
+    if (this.isVerboseEnabled()) {
+      this.log(message, data, "VERBOSE");
+    }
   }
 
   debug(message, data) {
-    this.log(message, data, "DEBUG");
+    if (this.isDebugEnabled()) {
+      this.log(message, data, "DEBUG");
+    }
   }
 
   info(message, data) {
-    this.log(message, data, "INFO");
+    if (this.isInfoEnabled()) {
+      this.log(message, data, "INFO");
+    }
   }
 
   warn(message, data) {
-    this.log(message, data, "WARN");
+    if (this.isWarnEnabled()) {
+      this.log(message, data, "WARN");
+    }
   }
 
   error(message, data) {
-    this.log(message, data, "ERROR");
+    if (this.isErrorEnabled()) {
+      this.log(message, data, "ERROR");
+    }
   }
 
   alert(message, data) {
-    this.log(message, data, "ALERT");
+    if (this.isAlertEnabled()) {
+      this.log(message, data, "ALERT");
+    }
   }
 
   isVerboseEnabled() {
