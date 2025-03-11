@@ -1,37 +1,22 @@
+import { settings } from "./constants.js";
 import { Logger } from "./logger.js";
 import { spawnSync } from "child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
 export class Installers {
-  constructor() {
+  /**
+   * @param {FileManager} fileManager
+   */
+  constructor(fileManager) {
+    this.fileManager = fileManager;
     this.logger = new Logger(Installers.name);
     this.libs = {
       ts: ["@types/node", "typescript", "tsconfig-paths", "tsx", "tsup"],
     };
   }
 
-  /** @private */
-  #readJsonFile(path) {
-    try {
-      return JSON.parse(
-        readFileSync(path, "utf8").replace(
-          /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm,
-          ""
-        )
-      );
-    } catch {
-      return {};
-    }
-  }
-
-  /** @private */
-  #writeJsonFile(path, data) {
-    return writeFileSync(path, JSON.stringify(data, null, 2));
-  }
-
   async prettier() {
     this.logger.info("Creating .prettierrc...");
-    this.#writeJsonFile(".prettierrc", {
+    this.fileManager.writeJsonFile(".prettierrc", {
       semi: true,
       singleQuote: true,
       trailingComma: "all",
@@ -48,65 +33,55 @@ export class Installers {
       stdio: "inherit",
     });
 
-    if (!existsSync(".vscode")) {
+    if (!this.fileManager.exists(".vscode")) {
       this.logger.info("Creating dir '.vscode'...");
-      mkdirSync(".vscode");
+      this.fileManager.mkdir(".vscode");
     }
 
-    const currentSettings = this.#readJsonFile("./.vscode/settings.json");
+    const currentSettings = this.fileManager.readJsonFile(
+      "./.vscode/settings.json"
+    );
     this.logger.debug("Current settings.json:", currentSettings);
-    this.#writeJsonFile(".vscode/settings.json", {
+    this.fileManager.writeJsonFile(".vscode/settings.json", {
       ...currentSettings,
-      "editor.formatOnSave": true,
-      "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit",
-      },
-      "explorer.fileNesting.enabled": true,
-      "explorer.fileNesting.patterns": {
-        "package.json":
-          "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, .nvmrc, prettier.config.js, .eslintrc.js, .eslintignore, .prettierrc, .prettierrc.js, .prettierrc.json, .prettierrc.yaml, .prettierrc.yml, .prettierrc.toml, .prettierrc.cjs, .prettierrc.config.js., .env*, .git*, eslint*, *config.js, *config.json, *config.yaml, *config.yml, *config.toml, *config.cjs, *config.config.js, architecture.json",
-      },
+      ...settings.editorSettings,
     });
   }
 
   async typescript() {
     this.logger.info(`Installing ${this.libs.ts}...`);
-    const tsConfig = {
-      esModuleInterop: true,
-      resolveJsonModule: true,
-      strictNullChecks: true,
-      baseUrl: ".",
-      paths: {
-        "@/*": ["./src/*"],
-      },
-    };
 
     spawnSync("npm", ["install", "--save-dev", ...this.libs.ts], {
       stdio: "inherit",
     });
 
-    if (!existsSync("tsconfig.json")) {
+    if (!this.fileManager.exists("tsconfig.json")) {
       this.logger.info("Creating tsconfig.json...");
       spawnSync("npx", ["tsc", "--init"], {
         stdio: "inherit",
       });
     }
 
-    const currentTsConfig = this.#readJsonFile("tsconfig.json");
+    const currentTsConfig = this.fileManager.readJsonFile("tsconfig.json");
+    this.logger.debug("Current tsConfig:", currentTsConfig);
 
     console.log("\n\rAdding tsconfig.json paths...\n");
-    for (const [key, value] of Object.entries(tsConfig)) {
+    for (const [key, value] of Object.entries(settings.compilerOptions)) {
       console.log(`${key}:`, value);
     }
     console.log("\n");
 
-    this.#writeJsonFile("tsconfig.json", {
+    this.fileManager.writeJsonFile("tsconfig.json", {
       compilerOptions: {
         ...currentTsConfig.compilerOptions,
-        ...tsConfig,
+        ...settings.compilerOptions,
       },
     });
 
     this.logger.info("TypeScript installed successfully!");
   }
 }
+
+/**
+ * @typedef {import("./fileManager.js").FileManager} FileManager
+ */

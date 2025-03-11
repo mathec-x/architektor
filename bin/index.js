@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { prompts } from "#core/constants";
+import { FileManager } from "#core/fileManager";
 import { FileSystem } from "#core/fileSystem";
 import { Installers } from "#core/installers";
 import { Logger } from "#core/logger";
@@ -11,8 +12,9 @@ import { exit } from "process";
 const name = "architect";
 const version = "0.0.1";
 
-const fileSystem = new FileSystem();
-const installers = new Installers();
+const fileManager = new FileManager();
+const fileSystem = new FileSystem(fileManager);
+const installers = new Installers(fileManager);
 const prompt = new Prompt();
 const program = new Command(name);
 

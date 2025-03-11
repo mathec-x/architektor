@@ -1,18 +1,15 @@
 import { dirname, join, extname, resolve, basename } from "path";
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  statSync,
-  readdirSync,
-} from "fs";
+
 import { colors, Logger } from "./logger.js";
 import { fileURLToPath } from "url";
 import { cwd, stdout } from "process";
 
 export class FileSystem {
-  constructor() {
+  /**
+   * @param {FileManager} fileManager
+   */
+  constructor(fileManager) {
+    this.fileManager = fileManager;
     this.logger = new Logger(FileSystem.name);
     this.allowedArchitectures = ["hexagonal", "clean", "mvc", "serverless"];
     this.filename = fileURLToPath(import.meta.url);
@@ -30,13 +27,13 @@ export class FileSystem {
   existCurrentArchitectureFile() {
     this.logger.debug("Checking current structure...");
     const path = resolve(cwd() + `/architecture.json`);
-    return existsSync(path);
+    return this.fileManager.exists(path);
   }
 
   listCurrentArchitectureSrc() {
     this.logger.debug("Checking current architecture...");
     const path = resolve(cwd() + `/src`);
-    return readdirSync(path);
+    return this.fileManager.readdir(path);
   }
 
   /**
@@ -48,8 +45,7 @@ export class FileSystem {
     try {
       const path = resolve(this.dirname + `/../patterns/${type}.json`);
       this.logger.info(`Reading from ${path}`);
-      const content = readFileSync(path, "utf-8");
-      return JSON.parse(content);
+      return this.fileManager.readJsonFile(path);
     } catch (error) {
       this.logger.verbose(error);
       return undefined;
@@ -74,8 +70,7 @@ export class FileSystem {
     try {
       const path = resolve(cwd() + `/architecture.json`);
       this.logger.info(`Reading from ${path}`);
-      const content = readFileSync(path, "utf-8");
-      return JSON.parse(content);
+      return this.fileManager.readJsonFile(path);
     } catch (error) {
       this.logger.verbose(error);
       return undefined;
@@ -90,7 +85,7 @@ export class FileSystem {
     try {
       const path = resolve(cwd() + `/architecture.json`);
       this.logger.info(`Copying to ${basename(path)}`);
-      writeFileSync(path, JSON.stringify(structure, null, 2));
+      this.fileManager.writeJsonFile(path, structure);
       return true;
     } catch (error) {
       this.logger.verbose(error);
@@ -130,11 +125,11 @@ export class FileSystem {
   /** @private */
   #readRecursive(path = "") {
     const structure = {};
-    for (const item of readdirSync(path).sort((_, b) =>
-      extname(b).length > 0 ? -1 : 1
-    )) {
+    for (const item of this.fileManager
+      .readdir(path)
+      .sort((_, b) => (extname(b).length > 0 ? -1 : 1))) {
       const currentPath = join(path, item);
-      if (statSync(currentPath).isDirectory()) {
+      if (this.fileManager.isDirectory(currentPath)) {
         structure[item] = this.#readRecursive(currentPath);
       } else {
         structure[item] = "";
@@ -158,9 +153,9 @@ export class FileSystem {
 
   /** @private */
   #makeDir(path) {
-    if (!existsSync(path)) {
+    if (!this.fileManager.exists(path)) {
       this.logger.debug(`Creating ${path}`);
-      mkdirSync(path);
+      this.fileManager.mkdir(path);
     } else {
       this.logger.verbose(`Directory ${path} already exists`);
     }
@@ -168,11 +163,15 @@ export class FileSystem {
 
   /** @private */
   #makeFile(path, value) {
-    if (!existsSync(path) || !statSync(path).isFile()) {
+    if (!this.fileManager.isFile(path)) {
       this.logger.info(`Add file ${path}`);
-      writeFileSync(path, value);
+      this.fileManager.writeTextFile(path, value);
     } else {
       this.logger.verbose(`File ${path} already exists`);
     }
   }
 }
+
+/**
+ * @typedef {import("./fileManager.js").FileManager} FileManager
+ */
