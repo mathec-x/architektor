@@ -101,7 +101,7 @@ program
     }
 
     logger.alert(
-      `Copy new struct: '${type}' to the file architecture.json, run 'architect generate' to apply it`
+      `Copy new struct: '${type}' to the file architecture.json, run 'architektor generate' to apply it`
     );
     fileSystem.copyStructure(structure);
     logger.logGroupEnd();
@@ -118,7 +118,7 @@ program
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
       logger.error(
-        "No structure found in the repository, please run 'architect <push or pull>' first"
+        "No structure found in the repository, please run 'architektor <push or pull>' first"
       );
       exit(0);
     }
@@ -147,7 +147,7 @@ program
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
       logger.error(
-        "No structure found in the repository, please run 'architect <push or pull>' first"
+        "No structure found in the repository, please run 'architektor <push or pull>' first"
       );
       exit(0);
     }
@@ -178,10 +178,11 @@ program
     logger.alert(`Node version: ${nodeVersion}`);
 
     if (await prompt.confirm(prompts.tsInstall(settings.tsLibs))) {
-      logger.alert("Init Installer...");
+      await prompt.delay(355);
       await installers.typescript();
     }
     if (await prompt.confirm(prompts.eslintInstall)) {
+      await prompt.delay(355);
       await installers.eslint();
     }
     if (await prompt.confirm(prompts.defaultConfig)) {
@@ -189,12 +190,11 @@ program
     }
 
     const choice = await prompt.select(
-      "Which architecture do you want to use? (you can cancel and run 'architect push' later)",
+      "Which architecture do you want to use? (you can cancel and run 'architektor push' later)",
       fileSystem.allowedArchitectures
     );
 
     if (choice) {
-      await prompt.delay(355);
       if (!fileSystem.isValid(choice)) {
         logger.error(`Invalid struct: '${choice}'`);
         exit(0);
@@ -202,19 +202,20 @@ program
 
       const structure = fileSystem.getByPattern(choice);
 
-      console.log("\n");
+      console.log();
+      await prompt.delay(355);
       fileSystem.printStructure(structure);
-      console.log("\n");
+      console.log();
 
-      if (fileSystem.existCurrentArchitectureFile()) {
-        if (!(await prompt.confirm(prompts.alreadyExist))) {
-          logger.warn("Operation canceled by the user");
-          exit(0);
-        }
-
-        await prompt.delay(355);
+      if (
+        fileSystem.existCurrentArchitectureFile() &&
+        !(await prompt.confirm(prompts.alreadyExist))
+      ) {
+        logger.warn("Operation canceled by the user");
+        exit(0);
       }
 
+      await prompt.delay(355);
       fileSystem.copyStructure(structure);
 
       if (await prompt.confirm(prompts.generate)) {
@@ -223,6 +224,8 @@ program
         await prompt.delay(355);
         fileSystem.generateStructure(structure);
       }
+
+      logger.info("Done!!!");
     }
 
     logger.logGroupEnd();
