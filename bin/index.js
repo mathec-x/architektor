@@ -161,7 +161,7 @@ program
 
 program
   .command("init")
-  .argument("<type>", "", String, "typescript")
+  .argument("[type]", "", String, "typescript")
   .option("-v, --verbose", "Print more information")
   .version(version)
   .description("Setup all dependencies for backend TypeScript project")
