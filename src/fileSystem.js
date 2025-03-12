@@ -46,15 +46,21 @@ export class FileSystem {
     }
   }
 
-  pullStructure(dir) {
-    const path = resolve(cwd() + "/" + dir);
-    this.logger.info(`Pulling structure from "${path}"`);
+  pullStructure(dir, ignore = []) {
+    try {
+      const path = resolve(cwd(), dir);
+      this.logger.info(`Pulling structure from "${path}"`);
+      const regex = new RegExp(ignore.join("|"), "gi");
+      this.logger.verbose(`ignores: [${ignore}] => ${regex}`);
+      const output = {
+        [basename(dir)]: this.#readRecursive(path, regex),
+      };
 
-    const output = {
-      [basename(dir)]: this.#readRecursive(path),
-    };
-
-    return output;
+      return output;
+    } catch (error) {
+      this.logger.error(error);
+      return undefined;
+    }
   }
 
   /**
@@ -118,20 +124,38 @@ export class FileSystem {
     }
   }
 
-  /** @private */
-  #readRecursive(path = "") {
-    const structure = {};
-    for (const item of this.fileManager
-      .readdir(path)
-      .sort((_, b) => (extname(b).length > 0 ? -1 : 1))) {
-      const currentPath = join(path, item);
-      if (this.fileManager.isDirectory(currentPath)) {
-        structure[item] = this.#readRecursive(currentPath);
-      } else {
-        structure[item] = "";
+  /**
+   * @private
+   * @param {string} path
+   * @param {RegExpConstructor} [ignore=]
+   */
+  #readRecursive(path = "", regex = undefined) {
+    try {
+      const structure = {};
+
+      for (const item of this.fileManager
+        .readdir(path)
+        .sort((_, b) => (extname(b).length > 0 ? -1 : 1))) {
+        const baseName = basename(item);
+        const currentPath = join(path, item);
+
+        if (regex && (baseName.match(regex) || baseName.startsWith("."))) {
+          this.logger.debug(`Ignore path: ${path} => ${baseName}`);
+          continue;
+        }
+
+        this.logger.verbose(`Readin path: ${path} => ${baseName}`);
+        if (this.fileManager.isFile(currentPath)) {
+          structure[item] = `// ${dirname(path)}/${baseName}`;
+        } else {
+          structure[item] = this.#readRecursive(currentPath);
+        }
       }
+      return structure;
+    } catch (error) {
+      this.logger.error(error);
+      return undefined;
     }
-    return structure;
   }
 
   /** @private */

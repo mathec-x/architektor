@@ -1,4 +1,6 @@
 export const prompts = {
+  saveStructureToFile:
+    "Do you want to save this structure to the file architecture.json?",
   continueGenerate: "Do you want to continue?",
   alreadyExist:
     "A structure already exists in the repository, Do you want to overwrite file architecture.json?",

@@ -7,7 +7,7 @@ import { Installers } from "#core/installers";
 import { Logger } from "#core/logger";
 import { Prompt } from "#core/prompt";
 import { Command } from "commander";
-import { exit } from "process";
+import { argv, exit } from "process";
 
 const name = "architect";
 const version = "0.0.1";
@@ -18,25 +18,38 @@ const installers = new Installers(fileManager);
 const prompt = new Prompt();
 const program = new Command(name);
 
+if (argv.includes("-v") || argv.includes("--verbose")) {
+  console.clear();
+  console.log("console was cleared");
+}
+
 program
   .command("pull")
   .version(version)
-  .description("Generate structure file architecture.json from current project")
-  .argument("<path>", "Path to the project root directory ex: ./src")
-  .action(async (path) => {
+  .description(
+    "Generate 'architecture.json' file by path argument and save it in the root of the project" +
+      "\nyou can ignore some files or directories by comma separated and regex patterns ex: package?,node_modules"
+  )
+  .argument("<path>", "Path to the project root directory ex: ./src or ./")
+  .option("-v, --verbose", "Print more information")
+  .option(
+    "-i, --ignore <any>",
+    "Ignore some files or directories by comma separated"
+  )
+  .action(async (path, options) => {
+    options.ignore = (options.ignore ? options.ignore.split(",") : []).concat([
+      "node_modules",
+    ]);
     const logger = new Logger("pull");
-    const prompts = {
-      save: "Do you want to save this structure to the file architecture.json?",
-    };
-
     logger.logGroup();
-    const structure = fileSystem.pullStructure(path);
+
+    const structure = fileSystem.pullStructure(path, options.ignore);
 
     console.log("\n");
     fileSystem.printStructure(structure);
     console.log("\n");
 
-    if (await prompt.confirm(prompts.save)) {
+    if (await prompt.confirm(prompts.saveStructureToFile)) {
       fileSystem.copyStructure(structure);
     }
 
