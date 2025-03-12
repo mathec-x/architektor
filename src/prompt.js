@@ -1,6 +1,6 @@
-import { stdin, stdout } from "process";
+import { exit, stdin, stdout } from "process";
 import { createInterface } from "readline";
-import { colors } from "./logger.js";
+import { styled } from "./logger.js";
 
 export class Prompt {
   /**
@@ -14,7 +14,7 @@ export class Prompt {
     });
 
     return new Promise((resolve) => {
-      rl.question(colors.italic + question + colors.reset, (answer) => {
+      rl.question(styled("italic", question), (answer) => {
         resolve(answer);
         rl.close();
       });
@@ -26,34 +26,40 @@ export class Prompt {
    * @returns {Promise<boolean>}
    */
   async confirm(question) {
-    const format =
-      colors.italic + "  > " + question + colors.reset + " (y/n): ";
+    const format = styled("italic", ` > ${question} (y/n): `);
+    let value = false;
+    const rl = this.#createReadLineInterface();
+    stdout.write(format);
 
     return new Promise((resolve) => {
-      const rl = createInterface({
-        input: stdin,
-        output: stdout,
-      });
-      const exit = () => {
-        resolve(false);
-        rl.close();
-      };
-      rl.on("SIGINT", exit);
-      rl.on("SIGCONT", exit);
-      rl.on("SIGTSTP", exit);
-      rl.on("SIGBREAK", exit);
-      if (stdin.isTTY) {
-        stdin.setRawMode(true);
-      }
-      stdout.write(format);
       stdin.on("keypress", (str) => {
-        const value = str && str.toLowerCase().startsWith("y") ? true : false;
-        stdout.write(` - ${value ? "Ok" : "Nop"}`, () => {
-          console.log("");
-          rl.close();
-          return resolve(value);
-        });
+        value = str && str.toLowerCase().startsWith("y") ? true : false;
+        rl.close();
+      });
+
+      rl.on("close", () => {
+        stdout.write("\n");
+        resolve(value);
       });
     });
+  }
+
+  /** @private */
+  #createReadLineInterface() {
+    const rl = createInterface({
+      input: stdin,
+      output: stdout,
+    });
+
+    if (stdin.isTTY) {
+      stdin.setRawMode(true);
+    }
+
+    rl.on("SIGINT", exit);
+    rl.on("SIGCONT", exit);
+    rl.on("SIGTSTP", exit);
+    rl.on("SIGBREAK", exit);
+
+    return rl;
   }
 }
