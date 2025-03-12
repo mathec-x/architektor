@@ -1,18 +1,23 @@
+import { colors } from "./logger.js";
+
 export const prompts = {
   saveStructureToFile:
     "Do you want to save this structure to the file architecture.json?",
   continueGenerate: "Do you want to continue?",
   alreadyExist:
     "A structure already exists in the repository, Do you want to overwrite file architecture.json?",
-  tsInstall: (list) =>
-    `Do you want to install the packages ${list} for typescript?`,
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
   defaultConfig:
     "Do you want to add some configurations like prettierrc, .gitignore... ?",
+  tsInstall: (list) =>
+    `Do you want to install the packages ${list} for typescript?`,
+  nodeVersion: (version) =>
+    `${colors.cyan}Your Current Node Version Is ${colors.yellow}${version}${colors.cyan}, Do you want to continue?${colors.reset}`,
 };
 
 export const settings = {
+  initAllowedTypes: ["typescript", "ts"],
   tsLibs: [
     "@types/jest",
     "@types/supertest",

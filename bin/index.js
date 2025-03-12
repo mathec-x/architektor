@@ -154,12 +154,19 @@ program
   .description("Setup all dependencies for backend TypeScript project")
   .action(async (type) => {
     const logger = new Logger(`init ${type}`);
-    const alloweds = ["typescript", "ts"];
     logger.logGroup();
-    if (!alloweds.includes(type)) {
-      logger.error(`Invalid type: '${type}' allowed types: ${alloweds}`);
+    if (!settings.initAllowedTypes.includes(type)) {
+      logger.error(
+        `Invalid type: '${type}' allowed types: ${settings.initAllowedTypes}`
+      );
       exit(0);
     }
+    const nodeVersion = installers.spawn("node", ["-v"]);
+    if (!(await prompt.confirm(prompts.nodeVersion(nodeVersion)))) {
+      exit(0);
+    }
+
+    fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
     if (await prompt.confirm(prompts.tsInstall(settings.tsLibs))) {
       logger.alert("Init Installer...");
       await installers.typescript();

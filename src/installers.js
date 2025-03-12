@@ -11,6 +11,22 @@ export class Installers {
     this.logger = new Logger(Installers.name);
   }
 
+  /**
+   *
+   * @param {string} command
+   * @param {readonly string[]} args
+   * @param {import("child_process").SpawnSyncOptionsWithBufferEncoding} options
+   */
+  spawn(command, args, options = {}) {
+    this.logger.debug("Spawn:", command, args);
+    const result = spawnSync(command, args, { ...options, encoding: "utf-8" });
+    if (result.error) {
+      this.logger.error("Failed to run command:", result.error);
+      throw result.error;
+    }
+    return (result.stdout + result.stderr).trim();
+  }
+
   async defaultConfig() {
     const pkg = this.fileManager.readJsonFile("package.json");
     pkg.scripts = {
