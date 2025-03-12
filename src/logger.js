@@ -41,7 +41,8 @@ const parsePascalCase = (label) => {
 
 export class Logger {
   constructor(name) {
-    const defaultlevel = argv.includes("-v") ? "VERBOSE" : "INFO";
+    const defaultlevel =
+      argv.includes("-v") || argv.includes("--verbose") ? "VERBOSE" : "INFO";
     this.name = parsePascalCase(name);
     this.colors = {
       ALERT: colors.cyan,
