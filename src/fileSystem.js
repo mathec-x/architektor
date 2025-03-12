@@ -42,7 +42,7 @@ export class FileSystem {
   getByPattern(type) {
     try {
       const path = resolve(this.dirname + `/../patterns/${type}.json`);
-      this.logger.info(`Reading from ${path}`);
+      this.logger.debug(`Reading from ${path}`);
       return this.fileManager.readJsonFile(path);
     } catch (error) {
       this.logger.verbose(error);
@@ -93,7 +93,7 @@ export class FileSystem {
   copyStructure(structure) {
     try {
       const path = resolve(cwd() + `/architecture.json`);
-      this.logger.info(`Copying to ${basename(path)}`);
+      this.logger.debug(`Copying to ${basename(path)}`);
       this.fileManager.writeJsonFile(path, structure);
       return true;
     } catch (error) {
