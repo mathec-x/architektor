@@ -57,7 +57,7 @@ export class Installers {
         this.logger.info(`Creating .env.${s}....`);
         this.fileManager.writeTextFile(
           `.env.${s}`,
-          `APPLICATION_NAME=ark\nNODE_ENV=${s}\n`
+          `APPLICATION_NAME=myApp\nNODE_ENV=${s}\n`
         );
       }
     }
