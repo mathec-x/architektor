@@ -9,7 +9,7 @@ import { Prompt } from "#core/prompt";
 import { Command } from "commander";
 import { argv, exit } from "process";
 
-const name = "architect";
+const name = "architektor";
 const version = "0.0.1";
 
 const fileManager = new FileManager();
@@ -63,15 +63,22 @@ program
   .command("push")
   .version(version)
   .description("Push structure to the project")
+  .option("-v, --verbose", "Print more information")
   .argument(
-    "<type>",
+    "[type]",
     `choose one of the following: ${fileSystem.showAllowedArchitectures()}`
   )
-  .option("-v, --verbose", "Print more information")
   .action(async (type) => {
     const logger = new Logger("push");
-
     logger.logGroup();
+
+    if (!type) {
+      type = await prompt.select(
+        "Which architecture do you want to use?",
+        fileSystem.allowedArchitectures
+      );
+    }
+
     if (!fileSystem.isValid(type)) {
       logger.error(`Invalid type: '${type}'`);
       exit(0);
@@ -177,6 +184,17 @@ program
     if (await prompt.confirm(prompts.defaultConfig)) {
       await installers.defaultConfig();
     }
+
+    const choice = await prompt.select(
+      "Which architecture do you want to use?",
+      fileSystem.allowedArchitectures
+    );
+
+    if (!fileSystem.isValid(choice)) {
+      logger.error(`Invalid type: '${choice}'`);
+      exit(0);
+    }
+
     logger.logGroupEnd();
     exit(0);
   });
