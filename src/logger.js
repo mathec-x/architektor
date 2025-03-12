@@ -22,6 +22,13 @@ export const colors = {
   tab: (n) => "\r" + "\t".repeat(n),
 };
 
+/**
+ * @param {keyof typeof colors} color
+ * @param {string} message
+ */
+export const styled = (color, message) =>
+  colors[color] + message + colors.reset;
+
 function debug(level, object) {
   if (object && ["DEBUG", "ERROR"].includes(level)) {
     return inspect(object, { colors: true, depth: 4, maxStringLength: 75 });
