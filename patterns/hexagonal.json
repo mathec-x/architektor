@@ -1,44 +1,25 @@
 {
     "src": {
         "adapters": {
-            "persistence": {
-                "prisma-user.repository.ts": "Repository implementations (Prisma, etc.)"
-            },
-            "controllers": {
-                "user.controller.ts": "HTTP controllers"
-            },
-            "gateways": {
-                "email.gateway.ts": "External API gateways"
-            }
+            "persistence": "Repository implementations (Prisma, etc.)",
+            "controllers": "HTTP controllers",
+            "gateways": "External API gateways"
         },
         "core": {
             "domain": {
-                "entities": {
-                    "user.ts": "Domain entities (User, etc.)"
-                },
-                "value-objects": {
-                    "email.ts": "Value objects (Email, etc.)"
-                },
-                "aggregates": {
-                    "user.aggregate.ts": "Aggregates (User aggregate, etc.)"
-                },
-                "repositories": {
-                    "user-repository.ts": "Domain repositories"
-                },
+                "entities": "Domain entities (User, etc.)",
+                "value-objects": "Value objects (Email, etc.)",
+                "aggregates": "Aggregates (User aggregate, etc.)",
+                "repositories": "Domain repositories",
                 "domain-events": {
                     "domain-event.ts": "Base domain event",
                     "user-created.event.ts": "User created event",
                     "user-email-changed.event.ts": "User email changed event"
                 }
             },
-            "use-cases": {
-                "create-user.use-case.ts": "Use cases (Create user, etc.)",
-                "update-user.use-case.ts": "Use cases (Update user, etc.)"
-            },
+            "use-cases": "Use cases (Create user, etc.)",
             "ports": {
-                "repositories": {
-                    "user-repository.port.ts": "Repository ports"
-                },
+                "repositories": "Repository ports",
                 "services": {}
             }
         },

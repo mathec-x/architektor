@@ -1,44 +1,18 @@
 {
     "src": {
         "application": {
-            "dto": {
-                "user-dto.ts": "Data Transfer Objects (input and output data)",
-                "product-dto.ts": "Data Transfer Objects (input and output data)"
-            },
-            "services": {
-                "notification.service.ts": "Application services (orchestrating use cases)",
-                "cache.service.ts": "Application services (orchestrating use cases)"
-            },
-            "use-cases": {
-                "user": {
-                    "create-user.use-case.ts": "Use cases (Application Services)",
-                    "update-user.use-case.ts": "Use cases (Application Services)",
-                    "delete-user.use-case.ts": "Use cases (Application Services)"
-                }
-            }
+            "dto": "Data Transfer Objects (input and output data)",
+            "services": "Application services (orchestrating use cases)",
+            "use-cases": "Use cases (Application Services)"
         },
         "domain": {
-            "entities": {
-                "user.ts": "Domain entities (User, Product, etc.)",
-                "product.ts": "Domain entities (User, Product, etc.)"
-            },
-            "interfaces": {
-                "user-repository.ts": "Contracts (not implementations) of external services",
-                "email-service.ts": "Contracts (not implementations) of external services"
-            },
-            "services": {
-                "auth-service.ts": "Domain services (business rules affecting multiple entities)",
-                "payment-service.ts": "Domain services (business rules affecting multiple entities)"
-            },
-            "value-objects": {
-                "email.ts": "Value objects (Email, CPF, etc.)",
-                "price.ts": "Value objects (Email, CPF, etc.)"
-            }
+            "entities": "Domain entities (User, Product, etc.)",
+            "interfaces": "Contracts (not implementations) of external services",
+            "services": "Domain services (business rules affecting multiple entities)",
+            "value-objects": "Value objects (Email, CPF, etc.)"
         },
         "infrastructure": {
-            "cache": {
-                "redis.ts": "Cache implementation (Redis, etc.)"
-            },
+            "cache": "Cache implementation (Redis, etc.)",
             "database": {
                 "prisma": {
                     "client.ts": "PrismaClient instance",
@@ -55,31 +29,17 @@
                 "bull.config.ts": "Bull configuration for message queues",
                 "process-job.ts": "Job processing in queues"
             },
-            "repositories": {
-                "user-repository.ts": "Repository implementations based on Domain contracts"
-            },
-            "services": {
-                "email.service.ts": "External service implementations (Email, Cache, etc.)",
-                "logger.service.ts": "External service implementations (Email, Cache, etc.)"
-            }
+            "repositories": "Repository implementations based on Domain contracts",
+            "services": "External service implementations (Email, Cache, etc.)"
         },
         "shared": {
-            "config": {
-                "env.ts": "Application configurations",
-                "app-config.ts": "Application configurations"
-            },
+            "config": "Application configurations",
             "errors": {
                 "app-error.ts": "Error handling and custom exceptions",
                 "not-found-error.ts": "Error handling and custom exceptions"
             },
-            "middlewares": {
-                "error-handler.middleware.ts": "Generic application middlewares",
-                "auth.middleware.ts": "Generic application middlewares"
-            },
-            "utils": {
-                "date.util.ts": "Helper and utility functions",
-                "string.util.ts": "Helper and utility functions"
-            }
+            "middlewares": "Generic application middlewares",
+            "utils": "Helper and utility functions"
         },
         "main.ts": "Server initialization file"
     }
