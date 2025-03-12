@@ -5,20 +5,26 @@ O projeto `architektor` é uma CLI para geração de componentes em arquiteturas
 ## Instalação
 
 Você pode instalar a CLI globalmente ou como uma dependência de desenvolvimento no seu projeto.
+### Execução com NPX
 
-### Instalação Global
-
-```sh
-npm install -g architektor
-```
-
-### Instalação como Dependência de Desenvolvimento
+Você pode executar a CLI diretamente com `npx` sem a necessidade de instalação.
 
 ```sh
-npm install --save-dev architektor
+npx architektor <comando>
 ```
 
 ## Comandos Disponíveis
+
+### `init`
+
+Configura todas as dependências necessárias para um projeto backend em TypeScript.
+
+```sh
+architektor init <type>
+```
+
+- `type`: Tipo de projeto (padrão: `typescript`).
+- `-v, --verbose`: Imprime mais informações durante a execução.
 
 ### `pull`
 
@@ -28,7 +34,9 @@ Gera um arquivo `architecture.json` a partir da estrutura atual do projeto.
 architektor pull <path>
 ```
 
-- `path`: Caminho para o diretório raiz do projeto (padrão: `./src`).
+- `path`: Caminho para o diretório raiz do projeto (ex: `./src` ou `./`).
+- `-v, --verbose`: Imprime mais informações durante a execução.
+- `-i, --ignore <any>`: Ignora arquivos ou diretórios específicos (ex: `node_modules,coverage,dist`).
 
 ### `push`
 
@@ -39,6 +47,7 @@ architektor push <type>
 ```
 
 - `type`: Tipo de arquitetura (hexagonal, clean, mvc, serverless).
+- `-v, --verbose`: Imprime mais informações durante a execução.
 
 ### `generate`
 
@@ -48,6 +57,8 @@ Aplica a estrutura definida no arquivo `architecture.json` ao projeto.
 architektor generate
 ```
 
+- `-v, --verbose`: Imprime mais informações durante a execução.
+
 ### `print`
 
 Imprime a estrutura atual definida no arquivo `architecture.json`.
@@ -56,15 +67,15 @@ Imprime a estrutura atual definida no arquivo `architecture.json`.
 architektor print
 ```
 
-### `init typescript`
+- `-v, --verbose`: Imprime mais informações durante a execução.
 
-Configura todas as dependências necessárias para um projeto backend em TypeScript.
+## Exemplos de Uso
+
+### Configurar Projeto TypeScript
 
 ```sh
 architektor init typescript
 ```
-
-## Exemplos de Uso
 
 ### Gerar Arquivo de Estrutura
 
@@ -88,12 +99,6 @@ architektor generate
 
 ```sh
 architektor print
-```
-
-### Configurar Projeto TypeScript
-
-```sh
-architektor init typescript
 ```
 
 ## Estruturas de Projeto
