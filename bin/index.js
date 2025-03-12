@@ -187,7 +187,7 @@ program
     }
 
     const choice = await prompt.select(
-      "Which architecture do you want to use?",
+      "Which architecture do you want to use? (you can cancel and run 'architect push' later)",
       fileSystem.allowedArchitectures
     );
 
