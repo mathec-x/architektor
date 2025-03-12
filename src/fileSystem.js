@@ -11,7 +11,12 @@ export class FileSystem {
   constructor(fileManager) {
     this.fileManager = fileManager;
     this.logger = new Logger(FileSystem.name);
-    this.allowedArchitectures = ["hexagonal", "clean", "mvc", "serverless"];
+    this.allowedArchitectures = Object.freeze([
+      "hexagonal",
+      "clean",
+      "mvc",
+      "serverless",
+    ]);
     this.filename = fileURLToPath(import.meta.url);
     this.dirname = dirname(this.filename);
   }

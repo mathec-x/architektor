@@ -1,6 +1,6 @@
 import { exit, stdin, stdout } from "process";
 import { createInterface } from "readline";
-import { styled } from "./logger.js";
+import { colors, styled } from "./logger.js";
 
 export class Prompt {
   /**
@@ -22,6 +22,42 @@ export class Prompt {
   }
 
   /**
+   *
+   * @param {string} question
+   * @param {string[]} arrOptions
+   */
+  async select(question, options) {
+    const rl = this.#createReadLineInterface();
+    let value;
+
+    const format = styled("italic", ` > ${question}: `);
+    const optionsFormat = ["Cancel"]
+      .concat(options)
+      .map((option, index) => {
+        return `   ${index}. ${styled("cyan", option)}`;
+      })
+      .join("\n");
+
+    stdout.write(format + "\n" + optionsFormat + "\n   > ");
+    return new Promise((resolve) => {
+      stdin.on("keypress", (answer) => {
+        const index = parseInt(answer);
+        value = options[index - 1];
+        rl.close();
+      });
+
+      stdin.on("ready", () => {
+        stdout.write(optionsFormat);
+      });
+
+      rl.on("close", () => {
+        stdout.write("\n");
+        resolve(value);
+      });
+    });
+  }
+
+  /**
    * @param {string} question
    * @returns {Promise<boolean>}
    */
@@ -29,8 +65,8 @@ export class Prompt {
     const format = styled("italic", ` > ${question} (y/n): `);
     let value = false;
     const rl = this.#createReadLineInterface();
-    stdout.write(format);
 
+    stdout.write(format);
     return new Promise((resolve) => {
       stdin.on("keypress", (str) => {
         value = str && str.toLowerCase().startsWith("y") ? true : false;
