@@ -1,6 +1,6 @@
 import { exit, stdin, stdout } from "process";
 import { createInterface } from "readline";
-import { colors, styled } from "./logger.js";
+import { styled } from "./logger.js";
 
 export class Prompt {
   /**

@@ -27,7 +27,9 @@ export class Installers {
     return (result.stdout + result.stderr).trim();
   }
 
-  async defaultConfig() {
+  async defaultConfig(nodeVersion) {
+    this.fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
+
     const pkg = this.fileManager.readJsonFile("package.json");
     pkg.scripts = {
       ...pkg.scripts,

@@ -77,6 +77,10 @@ program
         "Which architecture do you want to use?",
         fileSystem.allowedArchitectures
       );
+      if (!type) {
+        logger.warn("No type selected");
+        exit(0);
+      }
     }
 
     if (!fileSystem.isValid(type)) {
@@ -169,11 +173,8 @@ program
       exit(0);
     }
     const nodeVersion = installers.spawn("node", ["-v"]);
-    if (!(await prompt.confirm(prompts.nodeVersion(nodeVersion)))) {
-      exit(0);
-    }
+    logger.alert(`Node version: ${nodeVersion}`);
 
-    fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
     if (await prompt.confirm(prompts.tsInstall(settings.tsLibs))) {
       logger.alert("Init Installer...");
       await installers.typescript();
@@ -182,7 +183,7 @@ program
       await installers.eslint();
     }
     if (await prompt.confirm(prompts.defaultConfig)) {
-      await installers.defaultConfig();
+      await installers.defaultConfig(nodeVersion);
     }
 
     const choice = await prompt.select(
@@ -190,9 +191,31 @@ program
       fileSystem.allowedArchitectures
     );
 
-    if (!fileSystem.isValid(choice)) {
-      logger.error(`Invalid type: '${choice}'`);
-      exit(0);
+    if (choice) {
+      if (!fileSystem.isValid(choice)) {
+        logger.error(`Invalid struct: '${choice}'`);
+        exit(0);
+      }
+
+      const structure = fileSystem.getByPattern(choice);
+
+      console.log("\n");
+      fileSystem.printStructure(structure);
+      console.log("\n");
+
+      if (fileSystem.existCurrentArchitectureFile()) {
+        if (!(await prompt.confirm(prompts.alreadyExist))) {
+          logger.warn("Operation canceled by the user");
+          exit(0);
+        }
+      }
+
+      fileSystem.copyStructure(structure);
+
+      if (await prompt.confirm(prompts.generate)) {
+        logger.alert("Generating structure folders to the repository...");
+        fileSystem.generateStructure(structure);
+      }
     }
 
     logger.logGroupEnd();
