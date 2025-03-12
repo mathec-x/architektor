@@ -100,7 +100,9 @@ program
       }
     }
 
-    logger.alert(`Copy new struct: '${type}' to the file architecture.json`);
+    logger.alert(
+      `Copy new struct: '${type}' to the file architecture.json, run 'architect generate' to apply it`
+    );
     fileSystem.copyStructure(structure);
     logger.logGroupEnd();
     exit(0);
@@ -192,6 +194,7 @@ program
     );
 
     if (choice) {
+      await prompt.delay(355);
       if (!fileSystem.isValid(choice)) {
         logger.error(`Invalid struct: '${choice}'`);
         exit(0);
@@ -208,12 +211,16 @@ program
           logger.warn("Operation canceled by the user");
           exit(0);
         }
+
+        await prompt.delay(355);
       }
 
       fileSystem.copyStructure(structure);
 
       if (await prompt.confirm(prompts.generate)) {
-        logger.alert("Generating structure folders to the repository...");
+        logger.warn("Generating structure folders to the repository...");
+
+        await prompt.delay(355);
         fileSystem.generateStructure(structure);
       }
     }

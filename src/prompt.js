@@ -3,6 +3,12 @@ import { createInterface } from "readline";
 import { styled } from "./logger.js";
 
 export class Prompt {
+  async delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
   /**
    * @param {string} question
    * @returns {Promise<string>}
