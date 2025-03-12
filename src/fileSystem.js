@@ -33,7 +33,6 @@ export class FileSystem {
   /**
    *
    * @param {string} type
-   * @returns {object}
    */
   getByPattern(type) {
     try {
@@ -46,11 +45,19 @@ export class FileSystem {
     }
   }
 
+  /**
+   *
+   * @param {*} dir
+   * @param {string[]} ignore
+   */
   pullStructure(dir, ignore = []) {
     try {
       const path = resolve(cwd(), dir);
       this.logger.info(`Pulling structure from "${path}"`);
-      const regex = new RegExp(ignore.join("|"), "gi");
+      const regex = new RegExp(
+        ignore.map((e) => e.replace(".", "\\.")).join("|"),
+        "gi"
+      );
       this.logger.verbose(`ignores: [${ignore}] => ${regex}`);
       const output = {
         [basename(dir)]: this.#readRecursive(path, regex),
@@ -63,9 +70,6 @@ export class FileSystem {
     }
   }
 
-  /**
-   * @returns {object}
-   */
   readCurrentFileStructure() {
     try {
       const path = resolve(cwd() + `/architecture.json`);
@@ -146,9 +150,9 @@ export class FileSystem {
 
         this.logger.verbose(`Readin path: ${path} => ${baseName}`);
         if (this.fileManager.isFile(currentPath)) {
-          structure[item] = `// ${dirname(path)}/${baseName}`;
+          structure[item] = `// ${baseName}`;
         } else {
-          structure[item] = this.#readRecursive(currentPath);
+          structure[item] = this.#readRecursive(currentPath, regex);
         }
       }
       return structure;

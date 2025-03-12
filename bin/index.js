@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { prompts } from "#core/constants";
+import { prompts, settings } from "#core/constants";
 import { FileManager } from "#core/fileManager";
 import { FileSystem } from "#core/fileSystem";
 import { Installers } from "#core/installers";
@@ -39,6 +39,8 @@ program
   .action(async (path, options) => {
     options.ignore = (options.ignore ? options.ignore.split(",") : []).concat([
       "node_modules",
+      "coverage",
+      "dist",
     ]);
     const logger = new Logger("pull");
     logger.logGroup();
@@ -153,21 +155,20 @@ program
   .action(async (type) => {
     const logger = new Logger(`init ${type}`);
     const alloweds = ["typescript", "ts"];
+    logger.logGroup();
     if (!alloweds.includes(type)) {
       logger.error(`Invalid type: '${type}' allowed types: ${alloweds}`);
       exit(0);
     }
-
-    logger.logGroup();
-    if (await prompt.confirm(prompts.tsInstall(installers.libs.ts))) {
+    if (await prompt.confirm(prompts.tsInstall(settings.tsLibs))) {
       logger.alert("Init Installer...");
       await installers.typescript();
     }
     if (await prompt.confirm(prompts.eslintInstall)) {
       await installers.eslint();
     }
-    if (await prompt.confirm(prompts.prettierInstall)) {
-      await installers.prettier();
+    if (await prompt.confirm(prompts.defaultConfig)) {
+      await installers.defaultConfig();
     }
     logger.logGroupEnd();
     exit(0);

@@ -9,12 +9,16 @@ export class Installers {
   constructor(fileManager) {
     this.fileManager = fileManager;
     this.logger = new Logger(Installers.name);
-    this.libs = {
-      ts: ["@types/node", "typescript", "tsconfig-paths", "tsx", "tsup"],
-    };
   }
 
-  async prettier() {
+  async defaultConfig() {
+    const pkg = this.fileManager.readJsonFile("package.json");
+    pkg.scripts = {
+      ...pkg.scripts,
+      ...settings.scripts,
+    };
+    pkg.saveJson();
+
     if (!this.fileManager.isFile(".prettierrc")) {
       this.logger.info("Creating .prettierrc...");
       this.fileManager.writeJsonFile(".prettierrc", settings.prettier);
@@ -22,7 +26,22 @@ export class Installers {
 
     if (!this.fileManager.isFile(".gitignore")) {
       this.logger.info("Creating .gitignore...");
-      this.fileManager.writeTextFile(".gitignore", "node_modules\n");
+      this.fileManager.writeTextFile(".gitignore", settings.gitignore);
+    }
+
+    this.fileManager.cpFromPackageToRepo(
+      "/defaults/jest.config.js",
+      "jest.config.js"
+    );
+
+    for (const s of settings.stages) {
+      if (!this.fileManager.isFile(`.env.${s}`)) {
+        this.logger.info(`Creating .env.${s}....`);
+        this.fileManager.writeTextFile(
+          `.env.${s}`,
+          `APPLICATION_NAME=ark\nNODE_ENV=${s}\n`
+        );
+      }
     }
   }
 
@@ -45,12 +64,18 @@ export class Installers {
       ...currentSettings,
       ...settings.editorSettings,
     });
+
+    this.fileManager.cpFromPackageToRepo(
+      "/defaults/eslint.config.mjs",
+      "eslint.config.mjs"
+    );
+    this.logger.info("Eslint installed successfully!");
   }
 
   async typescript() {
-    this.logger.info(`Installing ${this.libs.ts}...`);
+    this.logger.info(`Installing ${settings.tsLibs}...`);
 
-    spawnSync("npm", ["install", "--save-dev", ...this.libs.ts], {
+    spawnSync("npm", ["install", "--save-dev", ...settings.tsLibs], {
       stdio: "inherit",
     });
 
@@ -70,12 +95,12 @@ export class Installers {
     }
     console.log("\n");
 
-    this.fileManager.writeJsonFile("tsconfig.json", {
-      compilerOptions: {
-        ...currentTsConfig.compilerOptions,
-        ...settings.compilerOptions,
-      },
-    });
+    currentTsConfig.compilerOptions = {
+      ...currentTsConfig.compilerOptions,
+      ...settings.compilerOptions,
+    };
+
+    currentTsConfig.saveJson();
 
     this.logger.info("TypeScript installed successfully!");
   }

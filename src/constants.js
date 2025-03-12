@@ -8,11 +8,30 @@ export const prompts = {
     `Do you want to install the packages ${list} for typescript?`,
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
-  prettierInstall:
+  defaultConfig:
     "Do you want to add some configurations like prettierrc, .gitignore... ?",
 };
 
 export const settings = {
+  tsLibs: [
+    "@types/jest",
+    "@types/supertest",
+    "supertest",
+    "typescript",
+    "tsconfig-paths",
+    "tsx",
+    "tsup",
+    "jest",
+    "ts-jest",
+    "dotenv-cli",
+  ],
+  stages: ["test", "development", "staging", "production"],
+  scripts: {
+    dev: "dotenv -e .env.development tsx watch src/main.ts",
+    build: "tsup src/main.ts",
+    test: "dotenv -e .env.test jest --coverage",
+    "test:watch": "dotenv -e .env.test jest -- --watchAll --no-coverage",
+  },
   prettier: {
     semi: true,
     singleQuote: true,
@@ -20,6 +39,8 @@ export const settings = {
     printWidth: 120,
     tabWidth: 2,
   },
+  gitignore:
+    "node_modules\ndist\ncoverage\n# Keep environment variables out of version control\n.env.production\n",
   editorSettings: {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -27,24 +48,12 @@ export const settings = {
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-      "Docker*": "Docker*, docker*, .docker*",
-      "package.json": [
-        "architecture.json",
-        ".nvmrc",
-        "package*",
-        "yarn*",
-        "pnpm*",
-        "bun*",
-        "prettier*",
-        ".prettier*",
-        ".env*",
-        ".git*",
-        "eslint*",
-        ".eslint*",
-        "tsconfig*",
-        "jsconfig*",
-        "config*",
-      ].join(", "),
+      Dockerfile: "Docker*, docker*, .docker*",
+      ".env.development": ".env*",
+      "tsconfig.json":
+        "tsconfig*, jest*, eslint*, .eslint*, prettier*, .prettier*",
+      "package.json":
+        ".nvmrc, package*, yarn*, pnpm*, bun*, .git*, jsconfig*, config*",
     },
   },
   compilerOptions: {
