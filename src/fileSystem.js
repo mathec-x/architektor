@@ -169,7 +169,7 @@ export class FileSystem {
 
         this.logger.verbose(`Readin path: ${path} => ${baseName}`);
         if (this.fileManager.isFile(currentPath)) {
-          structure[item] = `// ${baseName}`;
+          structure[item] = `${baseName}`;
         } else {
           structure[item] = this.#readRecursive(currentPath, regex);
         }
