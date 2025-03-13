@@ -52,20 +52,25 @@ export class FileManager {
    */
   readJsonFile(path) {
     try {
-      return new FILE(
-        path,
-        JSON.parse(
-          readFileSync(path, "utf8").replace(
-            /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm,
-            ""
-          )
-        )
-      );
+      if (!this.isFile(path)) {
+        this.logger.verbose(`File ${path} does not exist`);
+        return new FILE(path, {});
+      }
+
+      return new FILE(path, JSON.parse(readFileSync(path, "utf8")));
     } catch (error) {
       try {
         this.logger.verbose(error);
         this.logger.verbose(`Trying to parse ${path} as JSON`);
-        return new FILE(path, JSON.parse(readFileSync(path, "utf8")));
+        return new FILE(
+          path,
+          JSON.parse(
+            readFileSync(path, "utf8").replace(
+              /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm,
+              ""
+            )
+          )
+        );
       } catch (error) {
         this.logger.error(error);
         return new FILE(path, {});
