@@ -47,6 +47,9 @@ export const settings = {
     "docker:run:dev":
       "docker run -p 3000:3000 -d $(jq -r .name package.json):dev",
     "docker:run:prod": "docker run -d $(jq -r .name package.json):prod",
+    "docker:db:up":
+      "docker-compose -f 'docker-compose.yml' up -d --build 'postgis'",
+    "docker:db:down": "docker-compose -f 'docker-compose.yml' down",
   },
   prettier: {
     semi: true,
