@@ -26,7 +26,6 @@ export class FileSystem {
       !!extname(a[0]) > 0 ? -1 : 1
     );
     for (const [key, value] of arr) {
-      console.log(key);
       if (!!extname(key)) {
         return path + key;
       } else {
