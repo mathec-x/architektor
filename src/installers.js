@@ -37,19 +37,17 @@ export class Installers {
     };
     pkg.saveJson();
 
-    if (!this.fileManager.isFile(".prettierrc")) {
-      this.logger.info("Creating .prettierrc...");
-      this.fileManager.writeJsonFile(".prettierrc", settings.prettier);
-    }
-
-    if (!this.fileManager.isFile(".gitignore")) {
-      this.logger.info("Creating .gitignore...");
-      this.fileManager.writeTextFile(".gitignore", settings.gitignore);
-    }
+    this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
+    this.fileManager.makeJsonFileIfNotExists(".gitignore", settings.gitignore);
 
     this.fileManager.cpFromPackageToRepo(
-      "/defaults/jest.config.js",
-      "jest.config.js"
+      "/defaults/.dockerignore",
+      ".dockerignore"
+    );
+    this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
+    this.fileManager.cpFromPackageToRepo(
+      "/defaults/docker-compose.yml",
+      "docker-compose.yml"
     );
 
     for (const s of settings.stages) {

@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  postgis:
+    image: postgis/postgis:latest
+    container_name: pg_database_dev
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dev
+    networks:
+      custom_network:
+        ipv4_address: 172.168.1.100
+    ports:
+      - "5432:5432"
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.168.1.0/24

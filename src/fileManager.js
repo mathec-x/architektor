@@ -149,4 +149,13 @@ export class FileManager {
       this.logger.verbose(`File ${path} already exists`);
     }
   }
+
+  makeJsonFileIfNotExists(path, value) {
+    if (!this.isFile(path)) {
+      this.logger.info(`Add file ${path}`);
+      this.writeJsonFile(path, value);
+    } else {
+      this.logger.verbose(`File ${path} already exists`);
+    }
+  }
 }

@@ -9,9 +9,8 @@ export const prompts = {
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
   defaultConfig:
-    "Do you want to add some configurations like prettierrc, .gitignore... ?",
-  tsInstall: (list) =>
-    `Do you want to install the packages ${list} for typescript?`,
+    "Do you want to create the default configuration files for the project?",
+  tsInstall: (list) => `Do you want to install the packages for typescript?`,
   nodeVersion: (version) =>
     `${colors.cyan}Your Current Node Version Is ${colors.yellow}${version}${colors.cyan}, Do you want to continue?${colors.reset}`,
 };
@@ -28,15 +27,26 @@ export const settings = {
     "tsup",
     "jest",
     "ts-jest",
+    "ts-node-app",
     "dotenv-cli",
   ],
   eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint"],
   stages: ["test", "development", "staging", "production"],
   scripts: {
     dev: "dotenv -e .env.development tsx watch src/main.ts",
+    start: "node dist/main.js",
     build: "tsup src/main.ts",
     test: "dotenv -e .env.test jest --coverage",
     "test:watch": "dotenv -e .env.test jest -- --watchAll --no-coverage",
+    "docker:dev": "npm run docker:build:dev && npm run docker:run:dev",
+    "docker:prod": "npm run docker:build:prod && npm run docker:run:prod",
+    "docker:build:dev":
+      "docker build --target development -t $(jq -r .name package.json):dev .",
+    "docker:build:prod":
+      "docker build --target production -t $(jq -r .name package.json):prod .",
+    "docker:run:dev":
+      "docker run -p 3000:3000 -d $(jq -r .name package.json):dev",
+    "docker:run:prod": "docker run -d $(jq -r .name package.json):prod",
   },
   prettier: {
     semi: true,
