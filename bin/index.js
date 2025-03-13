@@ -131,6 +131,10 @@ program
     if (await prompt.confirm(prompts.generate)) {
       logger.alert("Generating structure folders to the repository...");
       fileSystem.generateStructure(structure);
+      const entry = fileSystem.getStarterEntry(structure);
+      if (entry) {
+        installers.spawn("code", [entry]);
+      }
     }
 
     logger.logGroupEnd();
@@ -223,6 +227,11 @@ program
 
         await prompt.delay(355);
         fileSystem.generateStructure(structure);
+      }
+
+      const entry = fileSystem.getStarterEntry(structure);
+      if (entry) {
+        installers.spawn("code", [entry]);
       }
 
       logger.alert("Run 'npm run dev' to start the project");

@@ -21,6 +21,21 @@ export class FileSystem {
     this.dirname = dirname(this.filename);
   }
 
+  getStarterEntry(structure, path = "./") {
+    const arr = Object.entries(structure).sort((a) =>
+      !!extname(a[0]) > 0 ? -1 : 1
+    );
+    for (const [key, value] of arr) {
+      console.log(key);
+      if (!!extname(key)) {
+        return path + key;
+      } else {
+        return this.getStarterEntry(value, path + key + "/");
+      }
+    }
+    return null;
+  }
+
   showAllowedArchitectures() {
     return this.allowedArchitectures.join("|");
   }

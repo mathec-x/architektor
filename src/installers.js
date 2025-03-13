@@ -22,7 +22,7 @@ export class Installers {
     const result = spawnSync(command, args, { ...options, encoding: "utf-8" });
     if (result.error) {
       this.logger.error("Failed to run command:", result.error);
-      throw result.error;
+      return null;
     }
     return (result.stdout + result.stderr).trim();
   }
