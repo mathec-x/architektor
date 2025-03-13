@@ -9,7 +9,7 @@ import { Prompt } from "#core/prompt";
 import { Command } from "commander";
 import { argv, exit } from "process";
 
-const name = "architektor";
+const name = "ts-node-app";
 const version = "0.0.1";
 
 const fileManager = new FileManager();
@@ -101,7 +101,7 @@ program
     }
 
     logger.alert(
-      `Copy new struct: '${type}' to the file architecture.json, run 'architektor generate' to apply it`
+      `Copy new struct: '${type}' to the file architecture.json, run 'ts-node-app generate' to apply it`
     );
     fileSystem.copyStructure(structure);
     logger.logGroupEnd();
@@ -118,7 +118,7 @@ program
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
       logger.error(
-        "No structure found in the repository, please run 'architektor <push or pull>' first"
+        "No structure found in the repository, please run 'ts-node-app <push or pull>' first"
       );
       exit(0);
     }
@@ -147,7 +147,7 @@ program
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
       logger.error(
-        "No structure found in the repository, please run 'architektor <push or pull>' first"
+        "No structure found in the repository, please run 'ts-node-app <push or pull>' first"
       );
       exit(0);
     }
@@ -190,7 +190,7 @@ program
     }
 
     const choice = await prompt.select(
-      "Which architecture do you want to use? (you can cancel and run 'architektor push' later)",
+      "Which architecture do you want to use? (you can cancel and run 'ts-node-app push' later)",
       fileSystem.allowedArchitectures
     );
 
@@ -225,9 +225,10 @@ program
         fileSystem.generateStructure(structure);
       }
 
-      logger.info("Done!!!");
+      logger.alert("Run 'npm run dev' to start the project");
     }
 
+    logger.alert("Finished");
     logger.logGroupEnd();
     exit(0);
   });

@@ -1,6 +1,6 @@
 # Architect CLI
 
-O projeto `architektor` é uma CLI para geração de componentes em arquiteturas DDD, Hexagonal, Clean Architecture e MVC. Abaixo estão as funcionalidades disponíveis e como utilizá-las.
+O projeto `ts-node-app` é uma CLI para geração de componentes em arquiteturas DDD, Hexagonal, Clean Architecture e MVC. Abaixo estão as funcionalidades disponíveis e como utilizá-las.
 
 ## Instalação
 
@@ -10,7 +10,15 @@ Você pode instalar a CLI globalmente ou como uma dependência de desenvolviment
 Você pode executar a CLI diretamente com `npx` sem a necessidade de instalação.
 
 ```sh
-npx architektor <comando>
+npx ts-node-app <comando>
+```
+
+### Execução com Alias
+
+Se você instalar o pacote, pode utilizar o alias `tsna` para executar os comandos.
+
+```sh
+tsna <comando>
 ```
 
 ## Comandos Disponíveis
@@ -20,7 +28,7 @@ npx architektor <comando>
 Configura todas as dependências necessárias para um projeto backend em TypeScript.
 
 ```sh
-architektor init <type>
+npx ts-node-app init <type>
 ```
 
 - `type`: Tipo de projeto (padrão: `typescript`).
@@ -31,7 +39,7 @@ architektor init <type>
 Gera um arquivo `architecture.json` a partir da estrutura atual do projeto.
 
 ```sh
-architektor pull <path>
+npx ts-node-app pull <path>
 ```
 
 - `path`: Caminho para o diretório raiz do projeto (ex: `./src` ou `./`).
@@ -43,7 +51,7 @@ architektor pull <path>
 Aplica uma estrutura de projeto baseada em um dos padrões suportados.
 
 ```sh
-architektor push <type>
+npx ts-node-app push <type>
 ```
 
 - `type`: Tipo de arquitetura (hexagonal, clean, mvc, serverless).
@@ -54,7 +62,7 @@ architektor push <type>
 Aplica a estrutura definida no arquivo `architecture.json` ao projeto.
 
 ```sh
-architektor generate
+npx ts-node-app generate
 ```
 
 - `-v, --verbose`: Imprime mais informações durante a execução.
@@ -64,7 +72,7 @@ architektor generate
 Imprime a estrutura atual definida no arquivo `architecture.json`.
 
 ```sh
-architektor print
+npx ts-node-app print
 ```
 
 - `-v, --verbose`: Imprime mais informações durante a execução.
@@ -74,31 +82,31 @@ architektor print
 ### Configurar Projeto TypeScript
 
 ```sh
-architektor init typescript
+npx ts-node-app init typescript
 ```
 
 ### Gerar Arquivo de Estrutura
 
 ```sh
-architektor pull ./src
+npx ts-node-app pull ./src
 ```
 
 ### Aplicar Estrutura Hexagonal
 
 ```sh
-architektor push hexagonal
+npx ts-node-app push hexagonal
 ```
 
 ### Gerar Estrutura a partir do Arquivo
 
 ```sh
-architektor generate
+npx ts-node-app generate
 ```
 
 ### Imprimir Estrutura Atual
 
 ```sh
-architektor print
+npx ts-node-app print
 ```
 
 ## Estruturas de Projeto
@@ -266,4 +274,4 @@ src/
 
 ## Conclusão
 
-A CLI `architektor` facilita a criação e manutenção de estruturas de projeto seguindo padrões arquiteturais bem definidos. Utilize os comandos acima para gerenciar a estrutura do seu projeto de forma eficiente.
+A CLI `ts-node-app` facilita a criação e manutenção de estruturas de projeto seguindo padrões arquiteturais bem definidos. Utilize os comandos acima para gerenciar a estrutura do seu projeto de forma eficiente.

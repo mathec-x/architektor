@@ -65,7 +65,12 @@ export class Installers {
 
   async eslint() {
     this.logger.info("Creating eslint.config.mjs...");
-    spawnSync("npm", ["init", "@eslint/config@latest"], {
+
+    // spawnSync("npm", ["init", "@eslint/config@latest"], {
+    //   stdio: "inherit",
+    // });
+
+    spawnSync("npm", ["install", "--save-dev", ...settings.eslintLibs], {
       stdio: "inherit",
     });
 
