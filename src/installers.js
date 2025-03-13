@@ -33,30 +33,21 @@ export class Installers {
     const pkg = this.fileManager.readJsonFile("package.json");
     pkg.scripts = {
       ...pkg.scripts,
-      ...settings.scripts,
+      ...settings.scripts(pkg.name),
     };
     pkg.saveJson();
 
     this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
     this.fileManager.makeJsonFileIfNotExists(".gitignore", settings.gitignore);
 
-    this.fileManager.cpFromPackageToRepo(
-      "/defaults/.dockerignore",
-      ".dockerignore"
-    );
+    this.fileManager.cpFromPackageToRepo("/defaults/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
-    this.fileManager.cpFromPackageToRepo(
-      "/defaults/docker-compose.yml",
-      "docker-compose.yml"
-    );
+    this.fileManager.cpFromPackageToRepo("/defaults/docker-compose.yml", "docker-compose.yml");
 
     for (const s of settings.stages) {
       if (!this.fileManager.isFile(`.env.${s}`)) {
         this.logger.info(`Creating .env.${s}....`);
-        this.fileManager.writeTextFile(
-          `.env.${s}`,
-          `APPLICATION_NAME=myApp\nNODE_ENV=${s}\n`
-        );
+        this.fileManager.writeTextFile(`.env.${s}`, `APPLICATION_NAME=myApp\nNODE_ENV=${s}\n`);
       }
     }
   }
@@ -73,19 +64,14 @@ export class Installers {
       this.fileManager.mkdir(".vscode");
     }
 
-    const currentSettings = this.fileManager.readJsonFile(
-      "./.vscode/settings.json"
-    );
+    const currentSettings = this.fileManager.readJsonFile("./.vscode/settings.json");
     this.logger.debug("Current settings.json:", currentSettings);
     this.fileManager.writeJsonFile(".vscode/settings.json", {
       ...currentSettings,
       ...settings.editorSettings,
     });
 
-    this.fileManager.cpFromPackageToRepo(
-      "/defaults/eslint.config.mjs",
-      "eslint.config.mjs"
-    );
+    this.fileManager.cpFromPackageToRepo("/defaults/eslint.config.mjs", "eslint.config.mjs");
     this.logger.info("Eslint installed successfully!");
   }
 
