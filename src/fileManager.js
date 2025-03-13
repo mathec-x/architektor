@@ -51,19 +51,23 @@ export class FileManager {
    * @param {import("fs").PathOrFileDescriptor} path
    */
   readJsonFile(path) {
-    const content = readFileSync(path, "utf8");
     try {
       return new FILE(
         path,
-        JSON.parse(content.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, ""))
+        JSON.parse(
+          readFileSync(path, "utf8").replace(
+            /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm,
+            ""
+          )
+        )
       );
     } catch (error) {
       try {
         this.logger.verbose(error);
         this.logger.verbose(`Trying to parse ${path} as JSON`);
-        return new FILE(path, JSON.parse(content));
+        return new FILE(path, JSON.parse(readFileSync(path, "utf8")));
       } catch (error) {
-        this.logger.error(error, content);
+        this.logger.error(error);
         return new FILE(path, {});
       }
     }
