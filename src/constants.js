@@ -1,4 +1,4 @@
-import { colors } from "./logger.js";
+import { styled } from "./logger.js";
 
 export const prompts = {
   saveStructureToFile: "Do you want to save this structure to the file architecture.json?",
@@ -7,9 +7,10 @@ export const prompts = {
   eslintInstall: "Do you want to install eslint?",
   generate: "Do you want to generate the structure folders?",
   defaultConfig: "Do you want to create the default configuration files for the project?",
-  tsInstall: (list) => `Do you want to install the packages for typescript?`,
+  tsInstall: "Do you want to install the packages for typescript?",
   nodeVersion: (version) =>
-    `${colors.cyan}Your Current Node Version Is ${colors.yellow}${version}${colors.cyan}, Do you want to continue?${colors.reset}`,
+    `${styled("cyan", "Your Current Node Version Is")}${styled("yellow", version)}
+     ${styled("cyan", ", Do you want to use this version?")}`,
 };
 
 export const settings = {
@@ -41,8 +42,8 @@ export const settings = {
     "docker:build:prod": `docker build --target production -t ${appName}:prod .`,
     "docker:run:dev": `docker run -p 3000:3000 -d ${appName}:dev`,
     "docker:run:prod": `docker run -d ${appName}:prod`,
-    "docker:db:up": `docker-compose -f 'docker-compose.yml' up -d --build 'postgis'`,
-    "docker:db:down": `docker-compose -f 'docker-compose.yml' down`,
+    "docker:db:up": "docker-compose -f 'docker-compose.yml' up -d --build 'postgis'",
+    "docker:db:down": "docker-compose -f 'docker-compose.yml' down",
   }),
   prettier: {
     semi: true,
@@ -66,6 +67,7 @@ export const settings = {
     },
   },
   compilerOptions: {
+    target: "ES2024",
     esModuleInterop: true,
     resolveJsonModule: true,
     strictNullChecks: true,

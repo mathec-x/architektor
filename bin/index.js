@@ -13,9 +13,9 @@ const name = "ts-node-app";
 const version = "0.0.1";
 
 const fileManager = new FileManager();
-const fileSystem = new FileSystem(fileManager);
-const installers = new Installers(fileManager);
 const prompt = new Prompt();
+const fileSystem = new FileSystem(fileManager);
+const installers = new Installers(fileManager, prompt);
 const program = new Command(name);
 
 if (argv.includes("-v") || argv.includes("--verbose")) {
@@ -32,16 +32,9 @@ program
   )
   .argument("<path>", "Path to the project root directory ex: ./src or ./")
   .option("-v, --verbose", "Print more information")
-  .option(
-    "-i, --ignore <any>",
-    "Ignore some files or directories by comma separated"
-  )
+  .option("-i, --ignore <any>", "Ignore some files or directories by comma separated")
   .action(async (path, options) => {
-    options.ignore = (options.ignore ? options.ignore.split(",") : []).concat([
-      "node_modules",
-      "coverage",
-      "dist",
-    ]);
+    options.ignore = (options.ignore ? options.ignore.split(",") : []).concat(["node_modules", "coverage", "dist"]);
     const logger = new Logger("pull");
     logger.logGroup();
 
@@ -64,19 +57,13 @@ program
   .version(version)
   .description("Push structure to the project")
   .option("-v, --verbose", "Print more information")
-  .argument(
-    "[type]",
-    `choose one of the following: ${fileSystem.showAllowedArchitectures()}`
-  )
+  .argument("[type]", `choose one of the following: ${fileSystem.showAllowedArchitectures()}`)
   .action(async (type) => {
     const logger = new Logger("push");
     logger.logGroup();
 
     if (!type) {
-      type = await prompt.select(
-        "Which architecture do you want to use?",
-        fileSystem.allowedArchitectures
-      );
+      type = await prompt.select("Which architecture do you want to use?", fileSystem.allowedArchitectures);
       if (!type) {
         logger.warn("No type selected");
         exit(0);
@@ -100,9 +87,7 @@ program
       }
     }
 
-    logger.alert(
-      `Copy new struct: '${type}' to the file architecture.json, run 'ts-node-app generate' to apply it`
-    );
+    logger.alert(`Copy new struct: '${type}' to the file architecture.json, run 'ts-node-app generate' to apply it`);
     fileSystem.copyStructure(structure);
     logger.logGroupEnd();
     exit(0);
@@ -117,9 +102,7 @@ program
     const logger = new Logger("generate");
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
-      logger.error(
-        "No structure found in the repository, please run 'ts-node-app <push or pull>' first"
-      );
+      logger.error("No structure found in the repository, please run 'ts-node-app <push or pull>' first");
       exit(0);
     }
     const structure = fileSystem.readCurrentFileStructure();
@@ -133,7 +116,7 @@ program
       fileSystem.generateStructure(structure);
       const entry = fileSystem.getStarterEntry(structure);
       if (entry) {
-        installers.spawn("code", [entry]);
+        prompt.spawn("code", [entry]);
       }
     }
 
@@ -150,9 +133,7 @@ program
     const logger = new Logger("print");
     logger.logGroup();
     if (!fileSystem.existCurrentArchitectureFile()) {
-      logger.error(
-        "No structure found in the repository, please run 'ts-node-app <push or pull>' first"
-      );
+      logger.error("No structure found in the repository, please run 'ts-node-app <push or pull>' first");
       exit(0);
     }
     const structure = fileSystem.readCurrentFileStructure();
@@ -173,25 +154,11 @@ program
     const logger = new Logger(`init ${type}`);
     logger.logGroup();
     if (!settings.initAllowedTypes.includes(type)) {
-      logger.error(
-        `Invalid type: '${type}' allowed types: ${settings.initAllowedTypes}`
-      );
+      logger.error(`Invalid type: '${type}' allowed types: ${settings.initAllowedTypes}`);
       exit(0);
     }
-    const nodeVersion = installers.spawn("node", ["-v"]);
-    logger.alert(`Node version: ${nodeVersion}`);
 
-    if (await prompt.confirm(prompts.tsInstall(settings.tsLibs))) {
-      await prompt.delay(355);
-      await installers.typescript();
-    }
-    if (await prompt.confirm(prompts.eslintInstall)) {
-      await prompt.delay(355);
-      await installers.eslint();
-    }
-    if (await prompt.confirm(prompts.defaultConfig)) {
-      await installers.defaultConfig(nodeVersion);
-    }
+    await installers.init();
 
     const choice = await prompt.select(
       "Which architecture do you want to use? (you can cancel and run 'ts-node-app push' later)",
@@ -211,10 +178,7 @@ program
       fileSystem.printStructure(structure);
       console.log();
 
-      if (
-        fileSystem.existCurrentArchitectureFile() &&
-        !(await prompt.confirm(prompts.alreadyExist))
-      ) {
+      if (fileSystem.existCurrentArchitectureFile() && !(await prompt.confirm(prompts.alreadyExist))) {
         logger.warn("Operation canceled by the user");
         exit(0);
       }
@@ -231,7 +195,7 @@ program
 
       const entry = fileSystem.getStarterEntry(structure);
       if (entry) {
-        installers.spawn("code", [entry]);
+        prompt.spawn("code", [entry]);
       }
 
       logger.alert("Run 'npm run dev' to start the project");

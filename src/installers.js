@@ -1,41 +1,55 @@
-import { settings } from "./constants.js";
+import { prompts, settings } from "./constants.js";
 import { Logger } from "./logger.js";
-import { spawnSync } from "child_process";
 
 export class Installers {
   /**
    * @param {FileManager} fileManager
+   * @param {Prompt} prompt
    */
-  constructor(fileManager) {
+  constructor(fileManager, prompt) {
+    this.prompt = prompt;
     this.fileManager = fileManager;
     this.logger = new Logger(Installers.name);
   }
 
-  /**
-   *
-   * @param {string} command
-   * @param {readonly string[]} args
-   * @param {import("child_process").SpawnSyncOptionsWithBufferEncoding} options
-   */
-  spawn(command, args, options = {}) {
-    this.logger.debug("Spawn:", command, args);
-    const result = spawnSync(command, args, { ...options, encoding: "utf-8" });
-    if (result.error) {
-      this.logger.error("Failed to run command:", result.error);
-      return null;
+  async init() {
+    const nodeVersion = this.prompt.spawn("node", ["--version"]);
+    this.logger.alert(`Node version: ${nodeVersion}`);
+
+    if (!this.fileManager.isFile("package.json")) {
+      this.logger.info("Creating package.json...");
+      this.prompt.spawn("npm", ["init"]);
     }
-    return (result.stdout + result.stderr).trim();
+
+    if (await this.prompt.confirm(prompts.tsInstall)) {
+      await this.prompt.delay(355);
+      await this.typescript();
+    }
+    if (await this.prompt.confirm(prompts.eslintInstall)) {
+      await this.prompt.delay(355);
+      await this.eslint();
+    }
+    if (await this.prompt.confirm(prompts.defaultConfig)) {
+      await this.prompt.delay(355);
+      await this.defaultConfig(nodeVersion);
+    }
+
+    this.logger.info("Project initialized successfully!");
   }
 
+  /**
+   * @param {string} nodeVersion
+   */
   async defaultConfig(nodeVersion) {
     this.fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
 
-    const pkg = this.fileManager.readJsonFile("package.json");
-    pkg.scripts = {
-      ...pkg.scripts,
-      ...settings.scripts(pkg.name),
-    };
-    pkg.saveJson();
+    const pkg = this.fileManager.readJsonFile("package.json", { scripts: {}, name: "" });
+    this.logger.debug("Current package.json:", pkg.data);
+    pkg.set("scripts", {
+      ...settings.scripts(pkg.get("name")),
+      ...pkg.data.scripts,
+    });
+    pkg.save();
 
     this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
     this.fileManager.makeJsonFileIfNotExists(".gitignore", settings.gitignore);
@@ -55,7 +69,7 @@ export class Installers {
   async eslint() {
     this.logger.info("Creating eslint.config.mjs...");
 
-    spawnSync("npm", ["install", "--save-dev", ...settings.eslintLibs], {
+    this.prompt.spawn("npm", ["install", "--save-dev", ...settings.eslintLibs], {
       stdio: "inherit",
     });
 
@@ -64,11 +78,11 @@ export class Installers {
       this.fileManager.mkdir(".vscode");
     }
 
-    const currentSettings = this.fileManager.readJsonFile("./.vscode/settings.json");
-    this.logger.debug("Current settings.json:", currentSettings);
+    const currentSettings = this.fileManager.readJsonFile("./.vscode/settings.json", {});
+    this.logger.debug("Current settings.json:", currentSettings.data);
     this.fileManager.writeJsonFile(".vscode/settings.json", {
-      ...currentSettings,
       ...settings.editorSettings,
+      ...currentSettings.data,
     });
 
     this.fileManager.cpFromPackageToRepo("/defaults/eslint.config.mjs", "eslint.config.mjs");
@@ -78,19 +92,19 @@ export class Installers {
   async typescript() {
     this.logger.info(`Installing ${settings.tsLibs}...`);
 
-    spawnSync("npm", ["install", "--save-dev", ...settings.tsLibs], {
+    this.prompt.spawn("npm", ["install", "--save-dev", ...settings.tsLibs], {
       stdio: "inherit",
     });
 
     if (!this.fileManager.exists("tsconfig.json")) {
       this.logger.info("Creating tsconfig.json...");
-      spawnSync("npx", ["tsc", "--init"], {
+      this.prompt.spawn("npx", ["tsc", "--init"], {
         stdio: "inherit",
       });
     }
 
-    const currentTsConfig = this.fileManager.readJsonFile("tsconfig.json");
-    this.logger.debug("Current tsConfig:", currentTsConfig);
+    const currentTsConfig = this.fileManager.readJsonFile("tsconfig.json", { compilerOptions: {} });
+    this.logger.debug("Current tsConfig:", currentTsConfig.data);
 
     console.log("\n\rAdding tsconfig.json paths...\n");
     for (const [key, value] of Object.entries(settings.compilerOptions)) {
@@ -98,12 +112,11 @@ export class Installers {
     }
     console.log("\n");
 
-    currentTsConfig.compilerOptions = {
-      ...currentTsConfig.compilerOptions,
+    currentTsConfig.set("compilerOptions", {
       ...settings.compilerOptions,
-    };
-
-    currentTsConfig.saveJson();
+      ...currentTsConfig.get("compilerOptions"),
+    });
+    currentTsConfig.save();
 
     this.logger.info("TypeScript installed successfully!");
   }
@@ -111,4 +124,5 @@ export class Installers {
 
 /**
  * @typedef {import("./fileManager.js").FileManager} FileManager
+ * @typedef {import("./prompt.js").Prompt} Prompt
  */

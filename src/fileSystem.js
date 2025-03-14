@@ -11,22 +11,15 @@ export class FileSystem {
   constructor(fileManager) {
     this.fileManager = fileManager;
     this.logger = new Logger(FileSystem.name);
-    this.allowedArchitectures = Object.freeze([
-      "hexagonal",
-      "clean",
-      "mvc",
-      "serverless",
-    ]);
+    this.allowedArchitectures = Object.freeze(["hexagonal", "clean", "mvc", "serverless"]);
     this.filename = fileURLToPath(import.meta.url);
     this.dirname = dirname(this.filename);
   }
 
   getStarterEntry(structure, path = "./") {
-    const arr = Object.entries(structure).sort((a) =>
-      !!extname(a[0]) > 0 ? -1 : 1
-    );
+    const arr = Object.entries(structure).sort((a) => (extname(a[0]) ? -1 : 1));
     for (const [key, value] of arr) {
-      if (!!extname(key)) {
+      if (extname(key)) {
         return path + key;
       } else {
         return this.getStarterEntry(value, path + key + "/");
@@ -45,7 +38,7 @@ export class FileSystem {
 
   existCurrentArchitectureFile() {
     this.logger.debug("Checking current structure...");
-    const path = resolve(cwd() + `/architecture.json`);
+    const path = resolve(cwd() + "/architecture.json");
     return this.fileManager.exists(path);
   }
 
@@ -57,7 +50,8 @@ export class FileSystem {
     try {
       const path = resolve(this.dirname + `/../patterns/${type}.json`);
       this.logger.debug(`Reading from ${path}`);
-      return this.fileManager.readJsonFile(path);
+      const { data } = this.fileManager.readJsonFile(path, {});
+      return data;
     } catch (error) {
       this.logger.verbose(error);
       return undefined;
@@ -73,10 +67,7 @@ export class FileSystem {
     try {
       const path = resolve(cwd(), dir);
       this.logger.info(`Pulling structure from "${path}"`);
-      const regex = new RegExp(
-        ignore.map((e) => e.replace(".", "\\.")).join("|"),
-        "gi"
-      );
+      const regex = new RegExp(ignore.map((e) => e.replace(".", "\\.")).join("|"), "gi");
       this.logger.verbose(`ignores: [${ignore}] => ${regex}`);
       const output = {
         [basename(dir)]: this.#readRecursive(path, regex),
@@ -91,9 +82,10 @@ export class FileSystem {
 
   readCurrentFileStructure() {
     try {
-      const path = resolve(cwd() + `/architecture.json`);
+      const path = resolve(cwd() + "/architecture.json");
       this.logger.info(`Reading from ${path}`);
-      return this.fileManager.readJsonFile(path);
+      const { data } = this.fileManager.readJsonFile(path, {});
+      return data;
     } catch (error) {
       this.logger.verbose(error);
       return undefined;
@@ -106,7 +98,7 @@ export class FileSystem {
    */
   copyStructure(structure) {
     try {
-      const path = resolve(cwd() + `/architecture.json`);
+      const path = resolve(cwd() + "/architecture.json");
       this.logger.debug(`Copying to ${basename(path)}`);
       this.fileManager.writeJsonFile(path, structure);
       return true;
@@ -135,9 +127,7 @@ export class FileSystem {
         colors.reset,
         extname(key).length === 0 ? `${key}/` : key,
         colors.reset,
-        typeof value === "string"
-          ? `${colors.green}${colors.tab(9)}${value}${colors.reset}`
-          : "",
+        typeof value === "string" ? `${colors.green}${colors.tab(9)}${value}${colors.reset}` : "",
       ].join("");
       stdout.write(line + "\n");
       if (typeof value === "object") {
@@ -148,17 +138,14 @@ export class FileSystem {
   }
 
   /**
-   * @private
    * @param {string} path
-   * @param {RegExpConstructor} [ignore=]
+   * @param {RegExp | undefined} regex
    */
   #readRecursive(path = "", regex = undefined) {
     try {
       const structure = {};
 
-      for (const item of this.fileManager
-        .readdir(path)
-        .sort((_, b) => (extname(b).length > 0 ? -1 : 1))) {
+      for (const item of this.fileManager.readdir(path).sort((_, b) => (extname(b).length > 0 ? -1 : 1))) {
         const baseName = basename(item);
         const currentPath = join(path, item);
 
@@ -181,7 +168,6 @@ export class FileSystem {
     }
   }
 
-  /** @private */
   #writeRecursive(structure, path = "") {
     if (typeof structure === "string") {
       this.logger.verbose(`Structure is string for path: ${path}`);

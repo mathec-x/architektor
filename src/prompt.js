@@ -1,8 +1,28 @@
 import { exit, stdin, stdout } from "process";
 import { createInterface } from "readline";
-import { styled } from "./logger.js";
+import { Logger, styled } from "./logger.js";
+import { spawnSync } from "child_process";
 
 export class Prompt {
+  constructor() {
+    this.logger = new Logger(Prompt.name);
+  }
+  /**
+   *
+   * @param {string} command
+   * @param {readonly string[]} args
+   * @param {import("child_process").SpawnSyncOptionsWithBufferEncoding} options
+   */
+  spawn(command, args, options = {}) {
+    this.logger.debug(`Spawn: ${command}`, args.join(" "));
+    const result = spawnSync(command, args, { ...options, encoding: "utf-8" });
+    if (result.error) {
+      this.logger.error("Failed to run command:", result.error);
+      return null;
+    }
+    return result.stdout && result.stderr ? (result.stdout + result.stderr).trim() : "";
+  }
+
   async delay(time) {
     return new Promise((resolve) => {
       setTimeout(resolve, time);
@@ -30,7 +50,7 @@ export class Prompt {
   /**
    *
    * @param {string} question
-   * @param {string[]} arrOptions
+   * @param {readonly string[]} options
    */
   async select(question, options) {
     const rl = this.#createReadLineInterface();
@@ -86,7 +106,6 @@ export class Prompt {
     });
   }
 
-  /** @private */
   #createReadLineInterface() {
     const rl = createInterface({
       input: stdin,

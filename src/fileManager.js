@@ -1,31 +1,9 @@
 import { Logger } from "./logger.js";
-import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  statSync,
-  writeFileSync,
-} from "fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { cwd } from "process";
-
-class FILE {
-  #path;
-  constructor(path, metadata) {
-    this.#path = path;
-    Object.assign(this, metadata);
-  }
-
-  saveJson() {
-    return writeFileSync(this.#path, JSON.stringify(this, null, 2));
-  }
-  saveText() {
-    return writeFileSync(this.#path, this);
-  }
-}
+import { FileJson } from "./fileJson.js";
 
 export class FileManager {
   constructor() {
@@ -36,46 +14,12 @@ export class FileManager {
   }
 
   /**
-   * @param {import("fs").PathOrFileDescriptor} path
+   * @template T
+   * @param {import("fs").PathLike} path
+   * @param {T} defaultValue
    */
-  readFile(path) {
-    try {
-      return new FILE(path, readFileSync(path, "utf8"));
-    } catch (error) {
-      this.logger.verbose(error);
-      return new FILE(path, "");
-    }
-  }
-
-  /**
-   * @param {import("fs").PathOrFileDescriptor} path
-   */
-  readJsonFile(path) {
-    try {
-      if (!this.isFile(path)) {
-        this.logger.verbose(`File ${path} does not exist`);
-        return new FILE(path, {});
-      }
-
-      return new FILE(path, JSON.parse(readFileSync(path, "utf8")));
-    } catch (error) {
-      try {
-        this.logger.verbose(error);
-        this.logger.verbose(`Trying to parse ${path} as JSON`);
-        return new FILE(
-          path,
-          JSON.parse(
-            readFileSync(path, "utf8").replace(
-              /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm,
-              ""
-            )
-          )
-        );
-      } catch (error) {
-        this.logger.error(error);
-        return new FILE(path, {});
-      }
-    }
+  readJsonFile(path, defaultValue = undefined) {
+    return new FileJson(path, defaultValue);
   }
 
   /**
@@ -96,15 +40,15 @@ export class FileManager {
 
   /**
    * @param {import("fs").PathLike} path
-   * @param {{ encoding: BufferEncoding | null; withFileTypes?: false | undefined; recursive?: boolean | undefined }} options
+   * @param {{ encoding?: BufferEncoding; withFileTypes?: false; recursive?: boolean }} options
    */
   readdir(path, options = {}) {
-    return readdirSync(path, options);
+    return readdirSync(path, { encoding: "utf8", ...options });
   }
 
   /**
-   * @param {string | URL} source
-   * @param {string | URL} destination
+   * @param {string} source
+   * @param {string} destination
    * @param {import("fs").CopySyncOptions} options
    */
   cpFromPackageToRepo(source, destination, options = {}) {

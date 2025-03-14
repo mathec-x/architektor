@@ -26,8 +26,7 @@ export const colors = {
  * @param {keyof typeof colors} color
  * @param {string} message
  */
-export const styled = (color, message) =>
-  colors[color] + message + colors.reset;
+export const styled = (color, message) => colors[color] + message + colors.reset;
 
 function debug(level, object) {
   if (object && ["DEBUG", "ERROR"].includes(level)) {
@@ -48,8 +47,7 @@ const parsePascalCase = (label) => {
 
 export class Logger {
   constructor(name) {
-    const defaultlevel =
-      argv.includes("-v") || argv.includes("--verbose") ? "VERBOSE" : "INFO";
+    const defaultlevel = argv.includes("-v") || argv.includes("--verbose") ? "VERBOSE" : "INFO";
     this.name = parsePascalCase(name);
     this.colors = {
       ALERT: colors.cyan,
@@ -76,7 +74,7 @@ export class Logger {
   /**
    * Logs a message with the specified level and metadata.
    * @param {string} message - The message to log.
-   * @param {any} metadata - Additional metadata to log.
+   * @param {any} data - Additional metadata to log.
    * @param {'INFO' | 'ALERT' | 'ERROR' | 'WARN' | 'DEBUG' | 'VERBOSE'} level - The log level.
    */
   log(message, data, level = "INFO") {
@@ -93,10 +91,7 @@ export class Logger {
     const lvfrmt = level.toUpperCase().padStart(7, " ");
 
     return console.log(
-      `${date} ${pid} - %s${lvfrmt} %s[${this.name}] %s${message} %s${debug(
-        level,
-        data
-      )}`,
+      `${date} ${pid} - %s${lvfrmt} %s[${this.name}] %s${message} %s${debug(level, data)}`,
       this.colors[level],
       this.colors.WARN,
       this.colors[level],

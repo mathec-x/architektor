@@ -1,9 +1,11 @@
 {
   "src": {
-    "prompt.js": "Some Consoles functions",
-    "logger.js": "Custom Logger Application functions",
-    "installers.js": "Installers functions",
-    "fileSystem.js": "Core File System functions",
-    "constants.js": "Constants"
+    "prompt.js": "Readline Prompt Module for CLI Interface",
+    "logger.js": "Logger Module for better logging",
+    "installers.js": "Installers Module for installing dependencies",
+    "fileSystem.js": "File System Module for file operations",
+    "fileManager.js": "File Manager Module for managing files",
+    "fileJson.js": "File JSON Module for JSON file operations",
+    "constants.js": "Constants Module for storing constants"
   }
 }

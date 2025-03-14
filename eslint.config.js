@@ -6,12 +6,12 @@ export default [
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
   {
-    ignorePatterns: ["node_modules/", "dist/", "defaults"],
+    ignores: ["node_modules/", "defaults/"],
     rules: {
       "max-len": ["error", { code: 120 }],
       camelcase: "off",
       semi: ["error", "always"],
-      quotes: ["error", "single"],
+      quotes: ["error", "double"],
     },
   },
 ];
