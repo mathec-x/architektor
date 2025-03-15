@@ -62,6 +62,7 @@ export class Installers {
   async defaultConfig() {
     this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
     this.fileManager.makeJsonFileIfNotExists(".gitignore", settings.gitignore);
+    this.fileManager.cpFromPackageToRepo("/defaults/jest.config.js", "jest.config.js");
     this.fileManager.cpFromPackageToRepo("/defaults/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
     this.fileManager.cpFromPackageToRepo("/defaults/docker-compose.yml", "docker-compose.yml");
