@@ -17,8 +17,11 @@ export class Installers {
     this.logger.alert(`Node version: ${nodeVersion}`);
 
     if (!this.fileManager.isFile("package.json")) {
-      this.logger.info("Creating package.json...");
-      this.prompt.spawn("npm", ["init"]);
+      this.logger.info("Init Node project...");
+      this.prompt.spawn("npm", ["init", "-y"], {
+        stdio: "inherit",
+        input: "y\n",
+      });
     }
 
     if (await this.prompt.confirm(prompts.tsInstall)) {
