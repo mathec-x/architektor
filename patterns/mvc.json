@@ -28,9 +28,10 @@
             "date.util.ts": "Utility functions for date manipulation",
             "string.util.ts": "Utility functions for string manipulation"
         },
+        "app.ts": "Configuration of the mvc application",
         "main.ts": "Application entry point"
     },
     "tests": {
-        "main-e2e.spec.ts": "End-to-end tests for the application"
+        "app-e2e.spec.ts": "End-to-end tests for the application"
     }
 }
