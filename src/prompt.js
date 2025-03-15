@@ -53,12 +53,12 @@ export class Prompt {
    * @param {string} question
    * @param {readonly string[]} options
    */
-  async select(question, options) {
+  async select(question, options, { cancelLabel = "Cancel" } = {}) {
     const rl = this.#createReadLineInterface();
     let value;
 
     const format = styled("italic", ` > ${question}: `);
-    const optionsFormat = ["Cancel"]
+    const optionsFormat = [cancelLabel]
       .concat(options)
       .map((option, index) => {
         return `   ${index}. ${styled("cyan", option)}`;
