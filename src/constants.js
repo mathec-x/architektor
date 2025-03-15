@@ -30,7 +30,7 @@ export const settings = {
   ],
   eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint"],
   stages: ["test", "development", "staging", "production"],
-  scripts: (appName) => ({
+  scripts: {
     dev: "dotenv -e .env.development tsx watch src/main.ts",
     start: "node dist/main.js",
     build: "tsup src/main.ts",
@@ -38,13 +38,13 @@ export const settings = {
     "test:watch": "dotenv -e .env.test jest -- --watchAll --no-coverage",
     "docker:dev": "npm run docker:build:dev && npm run docker:run:dev",
     "docker:prod": "npm run docker:build:prod && npm run docker:run:prod",
-    "docker:build:dev": `docker build --target development -t ${appName}:dev .`,
-    "docker:build:prod": `docker build --target production -t ${appName}:prod .`,
-    "docker:run:dev": `docker run -p 3000:3000 -d ${appName}:dev`,
-    "docker:run:prod": `docker run -d ${appName}:prod`,
+    "docker:build:dev": "docker build --target development -t $npm_package_name:dev .",
+    "docker:build:prod": "docker build --target production -t $npm_package_name:prod .",
+    "docker:run:dev": "docker run -p 3000:3000 -d $npm_package_name:dev",
+    "docker:run:prod": "docker run -d $npm_package_name:prod",
     "docker:db:up": "docker-compose -f 'docker-compose.yml' up -d --build 'postgis'",
     "docker:db:down": "docker-compose -f 'docker-compose.yml' down",
-  }),
+  },
   prettier: {
     semi: true,
     singleQuote: true,
@@ -68,8 +68,8 @@ export const settings = {
   },
   compilerOptions: {
     target: "ES2024",
+    outDir: "./dist",
     esModuleInterop: true,
-    resolveJsonModule: true,
     strictNullChecks: true,
     baseUrl: ".",
     paths: {

@@ -29,7 +29,7 @@ export class Installers {
 
     if (await this.prompt.confirm(prompts.tsInstall)) {
       await this.prompt.delay(355);
-      await this.typescript();
+      await this.typescript(nodeVersion);
     }
     if (await this.prompt.confirm(prompts.eslintInstall)) {
       await this.prompt.delay(355);
@@ -37,7 +37,7 @@ export class Installers {
     }
     if (await this.prompt.confirm(prompts.defaultConfig)) {
       await this.prompt.delay(355);
-      await this.defaultConfig(nodeVersion);
+      await this.defaultConfig();
     }
 
     this.logger.info("Project initialized successfully!");
@@ -46,24 +46,25 @@ export class Installers {
   /**
    * @param {string} nodeVersion
    */
-  async defaultConfig(nodeVersion) {
-    this.fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
-
-    const pkg = this.fileManager.readJsonFile("package.json", { scripts: {}, name: "" });
+  async applyPackageJson(nodeVersion) {
+    const pkg = this.fileManager.readJsonFile("package.json", { scripts: {}, name: "", main: "", engines: {} });
     this.logger.debug("Current package.json:", pkg.data);
+    pkg.set("main", "dist/main.js");
+    pkg.set("engines", { node: nodeVersion.replace("v", ">=") });
     pkg.set("scripts", {
-      ...settings.scripts(pkg.get("name")),
       ...pkg.data.scripts,
+      ...settings.scripts,
     });
     pkg.save();
+    this.fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
+  }
 
+  async defaultConfig() {
     this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
     this.fileManager.makeJsonFileIfNotExists(".gitignore", settings.gitignore);
-
     this.fileManager.cpFromPackageToRepo("/defaults/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
     this.fileManager.cpFromPackageToRepo("/defaults/docker-compose.yml", "docker-compose.yml");
-
     for (const s of settings.stages) {
       if (!this.fileManager.isFile(`.env.${s}`)) {
         this.logger.info(`Creating .env.${s}....`);
@@ -74,7 +75,6 @@ export class Installers {
 
   async eslint() {
     this.logger.info("Creating eslint.config.mjs...");
-
     this.prompt.spawn("npm", ["install", "--save-dev", ...settings.eslintLibs], {
       stdio: "inherit",
     });
@@ -95,10 +95,15 @@ export class Installers {
     this.logger.info("Eslint installed successfully!");
   }
 
-  async typescript() {
-    this.logger.info(`Installing ${settings.tsLibs}...`);
+  /**
+   * @param {*} nodeVersion
+   */
+  async typescript(nodeVersion) {
+    const { compilerOptions, tsLibs } = settings;
 
-    this.prompt.spawn("npm", ["install", "--save-dev", ...settings.tsLibs], {
+    this.logger.info(`Installing ${tsLibs}...`);
+
+    this.prompt.spawn("npm", ["install", "--save-dev", ...tsLibs], {
       stdio: "inherit",
     });
 
@@ -113,17 +118,17 @@ export class Installers {
     this.logger.debug("Current tsConfig:", currentTsConfig.data);
 
     console.log("\n\rAdding tsconfig.json paths...\n");
-    for (const [key, value] of Object.entries(settings.compilerOptions)) {
+    for (const [key, value] of Object.entries(compilerOptions)) {
       console.log(`${key}:`, value);
     }
     console.log("\n");
 
     currentTsConfig.set("compilerOptions", {
-      ...settings.compilerOptions,
       ...currentTsConfig.get("compilerOptions"),
+      ...compilerOptions,
     });
     currentTsConfig.save();
-
+    await this.applyPackageJson(nodeVersion);
     this.logger.info("TypeScript installed successfully!");
   }
 }
