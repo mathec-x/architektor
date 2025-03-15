@@ -21,7 +21,7 @@ export class Prompt {
       this.logger.error("Failed to run command:", result.error);
       return null;
     }
-    return result.stdout && result.stderr ? (result.stdout + result.stderr).trim() : "";
+    return result.stdout || result.stderr ? (result.stdout + result.stderr).trim() : "";
   }
 
   async delay(time) {
