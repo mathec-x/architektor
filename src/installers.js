@@ -18,10 +18,8 @@ export class Installers {
 
     if (!this.fileManager.isFile("package.json")) {
       this.logger.info("Init Node project...");
-      const args = ["init"];
-      if (this.prompt.yesToAll) args.push("-y");
 
-      this.prompt.spawn("npm", args, {
+      this.prompt.spawn("npm", this.install.init(), {
         stdio: "inherit",
         input: "y\n",
       });
@@ -76,7 +74,7 @@ export class Installers {
 
   async eslint() {
     this.logger.info("Creating eslint.config.mjs...");
-    this.prompt.spawn("npm", ["install", "--save-dev", ...settings.eslintLibs], {
+    this.prompt.spawn("npm", this.install.dev(settings.eslintLibs), {
       stdio: "inherit",
     });
 
@@ -104,7 +102,7 @@ export class Installers {
 
     this.logger.info(`Installing ${tsLibs}...`);
 
-    this.prompt.spawn("npm", ["install", "--save-dev", ...tsLibs], {
+    this.prompt.spawn("npm", this.install.dev(tsLibs), {
       stdio: "inherit",
     });
 
@@ -132,6 +130,50 @@ export class Installers {
     await this.applyPackageJson(nodeVersion);
     this.logger.info("TypeScript installed successfully!");
   }
+
+  /**
+   *
+   * @param {string} framework
+   */
+  async installFramework(framework) {
+    this.logger.info(`Installing ${framework}...`);
+    switch (framework) {
+      case "Express":
+        this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
+          stdio: "inherit",
+        });
+        this.prompt.spawn("npm", this.install.save(["express"]), {
+          stdio: "inherit",
+        });
+
+        this.fileManager.cpFromPackageToRepo("/defaults/express/app.ts", "src/app.ts");
+        this.fileManager.cpFromPackageToRepo("/defaults/express/app-e2e.spec.ts", "tests/app-e2e.spec.ts");
+        break;
+      default:
+        this.logger.error("Invalid framework:", framework);
+        break;
+    }
+  }
+
+  install = {
+    init: () => {
+      const args = ["init"];
+      if (this.prompt.yesToAll) args.push("-y");
+      return args;
+    },
+    /**
+     * @param {string[]} libs
+     */
+    save: (libs) => {
+      return ["install", "--save", ...libs]; // --save is default but it's good to be explicit here
+    },
+    /**
+     * @param {string[]} libs
+     */
+    dev: (libs) => {
+      return ["install", "--save-dev", ...libs];
+    },
+  };
 }
 
 /**

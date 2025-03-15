@@ -194,6 +194,11 @@ program
         fileSystem.generateStructure(structure);
       }
 
+      const framework = await prompt.select("Do you want to apply one of these?", ["Express"], { cancelLabel: "No" });
+      if (framework) {
+        await installers.installFramework(framework);
+      }
+
       const entry = fileSystem.getStarterEntry(structure);
       if (entry) {
         prompt.spawn("code", [entry]);
