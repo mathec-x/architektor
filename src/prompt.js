@@ -5,6 +5,7 @@ import { spawnSync } from "child_process";
 
 export class Prompt {
   constructor() {
+    this.yesToAll = false;
     this.logger = new Logger(Prompt.name);
   }
   /**
@@ -88,14 +89,16 @@ export class Prompt {
    * @returns {Promise<boolean>}
    */
   async confirm(question) {
-    const format = styled("italic", ` > ${question} (y/n): `);
+    if (this.yesToAll) return true;
+
+    const format = styled("italic", ` > ${question} (y/n/a): `);
     let value = false;
     const rl = this.#createReadLineInterface();
 
     stdout.write(format);
     return new Promise((resolve) => {
       stdin.on("keypress", (str) => {
-        value = str && str.toLowerCase().startsWith("y") ? true : false;
+        value = this.#parseInput(str);
         rl.close();
       });
 
@@ -104,6 +107,19 @@ export class Prompt {
         resolve(value);
       });
     });
+  }
+
+  /**
+   * @param {string} input
+   */
+  #parseInput(input) {
+    if (input === "y") return true;
+    if (input === "a") {
+      this.yesToAll = true;
+      return true;
+    }
+
+    return false;
   }
 
   #createReadLineInterface() {
