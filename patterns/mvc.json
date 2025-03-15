@@ -29,5 +29,8 @@
             "string.util.ts": "Utility functions for string manipulation"
         },
         "main.ts": "Application entry point"
+    },
+    "tests": {
+        "main-e2e.spec.ts": "End-to-end tests for the application"
     }
 }
