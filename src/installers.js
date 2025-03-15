@@ -18,7 +18,10 @@ export class Installers {
 
     if (!this.fileManager.isFile("package.json")) {
       this.logger.info("Init Node project...");
-      this.prompt.spawn("npm", ["init", "-y"], {
+      const args = ["init"];
+      if (this.prompt.yesToAll) args.push("-y");
+
+      this.prompt.spawn("npm", args, {
         stdio: "inherit",
         input: "y\n",
       });

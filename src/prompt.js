@@ -91,7 +91,7 @@ export class Prompt {
   async confirm(question) {
     if (this.yesToAll) return true;
 
-    const format = styled("italic", ` > ${question} (y/n/a): `);
+    const format = styled("italic", ` > ${question} (y|n|all): `);
     let value = false;
     const rl = this.#createReadLineInterface();
 

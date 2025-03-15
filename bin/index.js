@@ -147,10 +147,15 @@ program
 program
   .command("init")
   .argument("[type]", "", String, "typescript")
+  .option("-y, --yes-to-all", "Answer yes to all questions")
   .option("-v, --verbose", "Print more information")
   .version(version)
   .description("Setup all dependencies for backend TypeScript project")
-  .action(async (type) => {
+  .action(async (type, options) => {
+    if (options.yesToAll) {
+      prompt.yesToAll = true;
+    }
+
     const logger = new Logger(`init ${type}`);
     logger.logGroup();
     if (!settings.initAllowedTypes.includes(type)) {
