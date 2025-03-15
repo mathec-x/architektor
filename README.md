@@ -1,115 +1,130 @@
 # Architect CLI
 
-O projeto `ts-node-app` é uma CLI para geração de componentes em arquiteturas DDD, Hexagonal, Clean Architecture e MVC. Abaixo estão as funcionalidades disponíveis e como utilizá-las.
+The `ts-node-app` project is a CLI for generating components in DDD, Hexagonal, Clean Architecture, and MVC architectures. Below are the available features and how to use them.
 
-## Instalação
+## Installation
 
-Você pode instalar a CLI globalmente ou como uma dependência de desenvolvimento no seu projeto.
-### Execução com NPX
+You can install the CLI globally or as a development dependency in your project.
 
-Você pode executar a CLI diretamente com `npx` sem a necessidade de instalação.
+### Running with NPX
 
-```sh
-npx ts-node-app <comando>
-```
-
-### Execução com Alias
-
-Se você instalar o pacote, pode utilizar o alias `tsna` para executar os comandos.
+You can run the CLI directly with `npx` without the need for installation.
 
 ```sh
-tsna <comando>
+npx ts-node-app <command>
 ```
 
-## Comandos Disponíveis
+### Running with Alias
+
+If you install the package globally or as a development dependency, you can use the alias `tsna` to run the commands.
+
+#### Global Installation
+
+```sh
+npm install -g ts-node-app
+```
+
+#### Development Dependency
+
+```sh
+npm install --save-dev ts-node-app
+```
+
+Once installed, you can use the alias:
+
+```sh
+tsna <command>
+```
+
+## Available Commands
 
 ### `init`
 
-Configura todas as dependências necessárias para um projeto backend em TypeScript.
+Sets up all necessary dependencies for a backend project in TypeScript.
 
 ```sh
 npx ts-node-app init <type>
 ```
 
-- `type`: Tipo de projeto (padrão: `typescript`).
-- `-v, --verbose`: Imprime mais informações durante a execução.
+- `type`: Project type (default: `typescript`).
+- `-v, --verbose`: Prints more information during execution.
 
 ### `pull`
 
-Gera um arquivo `architecture.json` a partir da estrutura atual do projeto.
+Generates an `architecture.json` file from the current project structure.
 
 ```sh
 npx ts-node-app pull <path>
 ```
 
-- `path`: Caminho para o diretório raiz do projeto (ex: `./src` ou `./`).
-- `-v, --verbose`: Imprime mais informações durante a execução.
-- `-i, --ignore <any>`: Ignora arquivos ou diretórios específicos (ex: `node_modules,coverage,dist`).
+- `path`: Path to the project's root directory (e.g., `./src` or `./`).
+- `-v, --verbose`: Prints more information during execution.
+- `-i, --ignore <any>`: Ignores specific files or directories (e.g., `node_modules,coverage,dist`).
 
 ### `push`
 
-Aplica uma estrutura de projeto baseada em um dos padrões suportados.
+Applies a project structure based on one of the supported patterns.
 
 ```sh
 npx ts-node-app push <type>
 ```
 
-- `type`: Tipo de arquitetura (hexagonal, clean, mvc, serverless).
-- `-v, --verbose`: Imprime mais informações durante a execução.
+- `type`: Architecture type (hexagonal, clean, mvc, serverless).
+- `-v, --verbose`: Prints more information during execution.
 
 ### `generate`
 
-Aplica a estrutura definida no arquivo `architecture.json` ao projeto.
+Applies the structure defined in the `architecture.json` file to the project.
 
 ```sh
 npx ts-node-app generate
 ```
 
-- `-v, --verbose`: Imprime mais informações durante a execução.
+- `-v, --verbose`: Prints more information during execution.
 
 ### `print`
 
-Imprime a estrutura atual definida no arquivo `architecture.json`.
+Prints the current structure defined in the `architecture.json` file.
 
 ```sh
 npx ts-node-app print
 ```
 
-- `-v, --verbose`: Imprime mais informações durante a execução.
+- `-v, --verbose`: Prints more information during execution.
 
-## Exemplos de Uso
+## Usage Examples
 
-### Configurar Projeto TypeScript
+### Set Up TypeScript Project
 
 ```sh
 npx ts-node-app init typescript
 ```
 
-### Gerar Arquivo de Estrutura
+### Generate Structure File
 
 ```sh
 npx ts-node-app pull ./src
 ```
 
-### Aplicar Estrutura Hexagonal
+### Apply Hexagonal Structure
 
 ```sh
 npx ts-node-app push hexagonal
 ```
 
-### Gerar Estrutura a partir do Arquivo
+### Generate Structure from File
 
 ```sh
 npx ts-node-app generate
 ```
 
-### Imprimir Estrutura Atual
+### Print Current Structure
 
 ```sh
 npx ts-node-app print
 ```
 
-## Estruturas de Projeto
+## Project Structures
 
 ### Clean Architecture
 
@@ -272,6 +287,44 @@ src/
 └── serverless.yml
 ```
 
-## Conclusão
+## Complete Project Setup
 
-A CLI `ts-node-app` facilita a criação e manutenção de estruturas de projeto seguindo padrões arquiteturais bem definidos. Utilize os comandos acima para gerenciar a estrutura do seu projeto de forma eficiente.
+When running the `init` command, the project will be set up with the following scripts and dependencies:
+
+### Scripts
+
+- `dev`: `dotenv -e .env.development tsx watch src/main.ts`
+- `start`: `node dist/main.js`
+- `build`: `tsup src/main.ts`
+- `test`: `echo "Error: no test specified" && exit 1`
+- `test:watch`: `dotenv -e .env.test jest -- --watchAll --no-coverage`
+- `docker:dev`: `npm run docker:build:dev && npm run docker:run:dev`
+- `docker:prod`: `npm run docker:build:prod && npm run docker:run:prod`
+- `docker:build:dev`: `docker build --target development -t application-name:dev .`
+- `docker:build:prod`: `docker build --target production -t application-name:prod .`
+- `docker:run:dev`: `docker run -p 3000:3000 -d application-name:dev`
+- `docker:run:prod`: `docker run -d application-name:prod`
+- `docker:db:up`: `docker-compose -f 'docker-compose.yml' up -d --build 'postgis'`
+- `docker:db:down`: `docker-compose -f 'docker-compose.yml' down`
+
+### Development Dependencies
+
+- `@eslint/js`: `^9.22.0`
+- `@types/jest`: `^29.5.14`
+- `@types/supertest`: `^6.0.2`
+- `dotenv-cli`: `^8.0.0`
+- `eslint`: `^9.22.0`
+- `globals`: `^16.0.0`
+- `jest`: `^29.7.0`
+- `supertest`: `^7.0.0`
+- `ts-jest`: `^29.2.6`
+- `ts-node-app`: `^0.1.0`
+- `tsconfig-paths`: `^4.2.0`
+- `tsup`: `^8.4.0`
+- `tsx`: `^4.19.3`
+- `typescript`: `^5.8.2`
+- `typescript-eslint`: `^8.26.1`
+
+## Conclusion
+
+The `ts-node-app` CLI facilitates the creation and maintenance of project structures following well-defined architectural patterns. Use the commands above to efficiently manage your project's structure.
