@@ -32,5 +32,12 @@
             "stringUtil.ts": "Utility functions for string manipulation"
         }
     },
+    "tests": {
+        "e2e": {
+            "createUser.spec.ts": "Tests for the createUser function",
+            "updateUser.spec.ts": "Tests for the updateUser function",
+            "deleteUser.spec.ts": "Tests for the deleteUser function"
+        }
+    },
     "serverless.yml": "Serverless framework configuration file"
 }

@@ -29,5 +29,8 @@
             "config": "General configuration (Logger, env, etc.)"
         },
         "main.ts": "Application entry point"
+    },
+    "tests": {
+        "main-e2e.spec.ts": "Main application tests"
     }
 }

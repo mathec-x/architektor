@@ -42,5 +42,8 @@
             "utils": "Helper and utility functions"
         },
         "main.ts": "Server initialization file"
+    },
+    "tests": {
+        "main-e2e.spec.ts": "Main application tests"
     }
 }
