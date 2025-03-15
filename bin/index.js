@@ -114,10 +114,6 @@ program
     if (await prompt.confirm(prompts.generate)) {
       logger.alert("Generating structure folders to the repository...");
       fileSystem.generateStructure(structure);
-      const entry = fileSystem.getStarterEntry(structure);
-      if (entry) {
-        prompt.spawn("code", [entry]);
-      }
     }
 
     logger.logGroupEnd();
