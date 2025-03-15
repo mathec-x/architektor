@@ -55,6 +55,16 @@ export class Installers {
     });
     pkg.save();
     this.fileManager.makeFileIfNotExists(".nvmrc", nodeVersion);
+    this.logger.info("Package.json updated successfully!");
+
+    // create readme
+    if (!this.fileManager.exists("README.md")) {
+      const readme = this.fileManager.readTextFile(this.fileManager.dirname + "/defaults/readme");
+      readme.set("{app_name}", pkg.data.name);
+      readme.set("{node_version}", nodeVersion);
+      this.fileManager.writeTextFile("README.md", readme.content);
+      this.logger.info("Readme created successfully!");
+    }
   }
 
   async defaultConfig() {

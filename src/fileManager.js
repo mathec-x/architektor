@@ -4,12 +4,13 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { cwd } from "process";
 import { FileJson } from "./fileJson.js";
+import { FileText } from "./fileText.js";
 
 export class FileManager {
   constructor() {
     this.logger = new Logger(FileManager.name);
     this.filename = fileURLToPath(import.meta.url);
-    this.dirname = dirname(this.filename);
+    this.dirname = dirname(join(this.filename, ".."));
     this.cwd = cwd();
   }
 
@@ -20,6 +21,13 @@ export class FileManager {
    */
   readJsonFile(path, defaultValue = undefined) {
     return new FileJson(path, defaultValue);
+  }
+
+  /**
+   * @param {import("fs").PathLike} path
+   */
+  readTextFile(path) {
+    return new FileText(path);
   }
 
   /**
@@ -52,7 +60,7 @@ export class FileManager {
    * @param {import("fs").CopySyncOptions} options
    */
   cpFromPackageToRepo(source, destination, options = {}) {
-    source = join(this.dirname, "..", source);
+    source = join(this.dirname, source);
     destination = join(this.cwd, destination);
     this.logger.verbose(`Copying ${source} to ${destination}`);
     return cpSync(source, destination, options);

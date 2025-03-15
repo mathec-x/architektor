@@ -13,7 +13,7 @@ export class FileSystem {
     this.logger = new Logger(FileSystem.name);
     this.allowedArchitectures = Object.freeze(["hexagonal", "clean", "mvc", "serverless"]);
     this.filename = fileURLToPath(import.meta.url);
-    this.dirname = dirname(this.filename);
+    this.dirname = dirname(join(this.filename, ".."));
   }
 
   getStarterEntry(structure, path = "./") {
@@ -48,7 +48,7 @@ export class FileSystem {
    */
   getByPattern(type) {
     try {
-      const path = resolve(this.dirname + `/../patterns/${type}.json`);
+      const path = resolve(this.dirname + `/patterns/${type}.json`);
       this.logger.debug(`Reading from ${path}`);
       const { data } = this.fileManager.readJsonFile(path, {});
       return data;
