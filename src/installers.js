@@ -146,6 +146,7 @@ export class Installers {
    * @param {string} framework
    */
   async installFramework(framework) {
+    let mainEntry;
     this.logger.info(`Installing ${framework}...`);
     switch (framework) {
       case "Express":
@@ -155,8 +156,10 @@ export class Installers {
         this.prompt.spawn("npm", this.install.save(["express"]), {
           stdio: "inherit",
         });
-
-        this.fileManager.cpFromPackageToRepo("/defaults/express/app.ts", "src/app.ts");
+        mainEntry = this.fileManager.readdir("./src", { recursive: true }).find((e) => e.endsWith("app.config.ts"));
+        if (mainEntry) {
+          this.fileManager.cpFromPackageToRepo("/defaults/express/app.config.ts", `src/${mainEntry}`);
+        }
         this.fileManager.cpFromPackageToRepo("/defaults/express/app-e2e.spec.ts", "tests/app-e2e.spec.ts");
         break;
       default:
