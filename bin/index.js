@@ -61,6 +61,9 @@ program
   .action(async (type) => {
     const logger = new Logger("push");
     logger.logGroup();
+    if (type?.length > 2) {
+      type = fileSystem.allowedArchitectures.find((e) => e.toLowerCase().startsWith(type.toLowerCase()));
+    }
 
     if (!type) {
       type = await prompt.select("Which architecture do you want to use?", fileSystem.allowedArchitectures);

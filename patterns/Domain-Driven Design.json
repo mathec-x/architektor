@@ -1,0 +1,82 @@
+{
+    "src/": {
+        "application/": {
+            "use-cases/": {
+                "create-user.use-case.ts": "Application use cases",
+                "update-user.use-case.ts": "Application use cases",
+                "delete-user.use-case.ts": "Application use cases"
+            },
+            "dto/": {
+                "user-dto.ts": "Data Transfer Objects"
+            }
+        },
+        "domain/": {
+            "entities/": {
+                "user.ts": "Domain Entities"
+            },
+            "value-objects/": {
+                "email.ts": "Value Objects (e.g., Email, CPF)"
+            },
+            "aggregates/": {
+                "user.aggregate.ts": "Domain Aggregates"
+            },
+            "repositories/": {
+                "user-repository.ts": "Domain Repository Interfaces"
+            },
+            "services/": {
+                "user-service.ts": "Domain Services (rules involving multiple entities)"
+            },
+            "events/": {
+                "user-created.event.ts": "Domain Events"
+            },
+            "exceptions/": {
+                "UserNotFoundException.ts": "Domain-related Exceptions"
+            }
+        },
+        "infrastructure/": {
+            "config/": {
+                "app-config.ts": "Technical Implementations (Database, External APIs)"
+            },
+            "repositories/": {
+                "UserRepository.ts": "Concrete Repository Implementations"
+            },
+            "logger/": {
+                "logger.ts": "Logger Implementation"
+            },
+            "http/": {
+                "server.ts": "Presentation Layer Implementation (API, Web)"
+            },
+            "services/": {
+                "auth.service.ts": "Technical Service Implementations",
+                "email.service.ts": "Technical Service Implementations"
+            },
+            "database/": {
+                "prisma/": {
+                    "client.ts": "Database Configuration",
+                    "user-repository.ts": "Database Configuration"
+                }
+            }
+        },
+        "shared/": {
+            "utils/": {
+                "date.util.ts": "Utility functions",
+                "string.util.ts": "Utility functions"
+            },
+            "constants/": {
+                "error-codes.ts": "Application constants"
+            },
+            "mappers/": {
+                "user.mapper.ts": "Data mappers"
+            },
+            "errors/": {
+                "app-error.ts": "Application errors",
+                "not-found-error.ts": "Application errors"
+            },
+            "middlewares/": {
+                "error-handler.middleware.ts": "Middleware functions",
+                "auth.middleware.ts": "Middleware functions"
+            }
+        },
+        "main.ts": "Application entry point"
+    }
+}

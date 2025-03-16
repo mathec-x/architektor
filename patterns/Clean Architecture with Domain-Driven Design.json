@@ -30,15 +30,27 @@
                 "process-job.ts": "Job processing in queues"
             },
             "repositories": "Repository implementations based on Domain contracts",
+            "config": "Infrastructure configurations",
             "services": "External service implementations (Email, Cache, etc.)"
         },
         "shared": {
             "config": "Application configurations",
+            "constants": "Application constants",
+            "decorators": "Custom decorators",
+            "dtos": "Shared Data Transfer Objects",
             "errors": {
                 "app-error.ts": "Error handling and custom exceptions",
                 "not-found-error.ts": "Error handling and custom exceptions"
             },
+            "enums": "Shared enums",
+            "exceptions": "Shared exceptions",
+            "filters": "Global exception filters",
+            "guards": "Global guards",
+            "interceptors": "Global interceptors",
+            "mappers": "Object mapping (DTOs to Entities and vice versa)",
             "middlewares": "Generic application middlewares",
+            "pipes": "Global pipes",
+            "types": "Shared types",
             "utils": "Helper and utility functions"
         },
         "main.ts": "Server initialization file"

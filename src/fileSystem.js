@@ -11,9 +11,9 @@ export class FileSystem {
   constructor(fileManager) {
     this.fileManager = fileManager;
     this.logger = new Logger(FileSystem.name);
-    this.allowedArchitectures = Object.freeze(["hexagonal", "clean", "mvc", "serverless"]);
     this.filename = fileURLToPath(import.meta.url);
     this.dirname = dirname(join(this.filename, ".."));
+    this.allowedArchitectures = this.listPatterns();
   }
 
   getStarterEntry(structure, path = "./") {
@@ -42,6 +42,16 @@ export class FileSystem {
     return this.fileManager.exists(path);
   }
 
+  listPatterns() {
+    try {
+      const path = resolve(this.dirname + "/patterns");
+      this.logger.info(`Reading from ${path}`);
+      return this.fileManager.readdir(path).map((e) => basename(e, ".json"));
+    } catch (error) {
+      this.logger.verbose(error);
+      return [];
+    }
+  }
   /**
    *
    * @param {string} type
