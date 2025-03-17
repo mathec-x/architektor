@@ -7,30 +7,28 @@
                 "delete-user.use-case.ts": "Application use cases"
             },
             "dto/": {
-                "user-dto.ts": "Data Transfer Objects"
+                "user-dto.ts": "Data Transfer Objects, Not Domain Entities (input and output data)"
             }
         },
         "domain/": {
-            "entities/": {
-                "user.ts": "Domain Entities"
+            "aggregates/": "Aggregates (WithDraw, Order, etc.)",
+            "contracts/": "Contracts (not implementations) of external services",
+            "entities/": "Domain entities (User, Product, etc.)",
+            "events/": "Domain Events",
+            "exceptions/": "Domain-related Exceptions",
+            "services/": "Domain services (business rules affecting multiple entities)",
+            "value-objects/": "Value objects (Email, CPF, etc.)"
+        },
+        "presentation": {
+            "controllers/": {
+                "user.controller.ts": "API Controllers"
             },
-            "value-objects/": {
-                "email.ts": "Value Objects (e.g., Email, CPF)"
+            "middlewares/": {
+                "auth.middleware.ts": "Middleware functions",
+                "error-handler.middleware.ts": "Middleware functions"
             },
-            "aggregates/": {
-                "user.aggregate.ts": "Domain Aggregates"
-            },
-            "repositories/": {
-                "user-repository.ts": "Domain Repository Interfaces"
-            },
-            "services/": {
-                "user-service.ts": "Domain Services (rules involving multiple entities)"
-            },
-            "events/": {
-                "user-created.event.ts": "Domain Events"
-            },
-            "exceptions/": {
-                "UserNotFoundException.ts": "Domain-related Exceptions"
+            "routes/": {
+                "user.routes.ts": "API Route Configuration"
             }
         },
         "infrastructure/": {
@@ -71,10 +69,6 @@
             "errors/": {
                 "app-error.ts": "Application errors",
                 "not-found-error.ts": "Application errors"
-            },
-            "middlewares/": {
-                "error-handler.middleware.ts": "Middleware functions",
-                "auth.middleware.ts": "Middleware functions"
             }
         },
         "main.ts": "Application entry point"

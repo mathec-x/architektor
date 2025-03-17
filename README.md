@@ -21,15 +21,26 @@ The `ts-node-app` project is a CLI for generating components in DDD, Hexagonal, 
   - [Apply Hexagonal Structure](#apply-hexagonal-structure)
   - [Generate Structure from File](#generate-structure-from-file)
   - [Print Current Structure](#print-current-structure)
-- [Architecture Concepts](#architecture-concepts)
-  - [Clean Architecture](#clean-architecture)
-  - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
-  - [Hexagonal Architecture](#hexagonal-architecture)
-  - [MVC Architecture](#mvc-architecture)
-  - [Serverless Architecture](#serverless-architecture)
 - [Complete Project Setup](#complete-project-setup)
   - [Scripts](#scripts)
   - [Development Dependencies](#development-dependencies)
+- [Architecture Concepts](#architecture-concepts)
+  - [Clean Architecture](#clean-architecture)
+  - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
+    - [Layers](#layers)
+      - [Entity](#entity)
+      - [Value Object](#value-object)
+      - [Aggregate](#aggregate)
+      - [Domain Exceptions (exceptions/)](#domain-exceptions-exceptions)
+      - [Interfaces](#interfaces)
+  - [Example Simple Structure DDD](#example-simple-structure-ddd)
+  - [Clean Architecture with Domain-Driven Design (DDD)](#clean-architecture-with-domain-driven-design-ddd)
+  - [Hexagonal Architecture](#hexagonal-architecture)
+    - [Example Structure](#example-structure)
+  - [MVC Architecture](#mvc-architecture)
+    - [Example Structure](#example-structure-1)
+  - [Serverless Architecture](#serverless-architecture)
+    - [Example Structure](#example-structure-2)
 - [Conclusion](#conclusion)
 
 ## Installation
@@ -154,6 +165,44 @@ npx ts-node-app generate
 npx ts-node-app print
 ```
 
+## Complete Project Setup
+
+When running the `init` command, the project will be set up with the following scripts and dependencies:
+
+### Scripts
+
+- `dev`: `dotenv -e .env.development tsx watch src/main.ts`
+- `start`: `node dist/main.js`
+- `build`: `tsup src/main.ts`
+- `test`: `echo "Error: no test specified" && exit 1`
+- `test:watch`: `dotenv -e .env.test jest -- --watchAll --no-coverage`
+- `docker:dev`: `npm run docker:build:dev && npm run docker:run:dev`
+- `docker:prod`: `npm run docker:build:prod && npm run docker:run:prod`
+- `docker:build:dev`: `docker build --target development -t application-name:dev .`
+- `docker:build:prod`: `docker build --target production -t application-name:prod .`
+- `docker:run:dev`: `docker run -p 3000:3000 -d application-name:dev`
+- `docker:run:prod`: `docker run -d application-name:prod`
+- `docker:db:up`: `docker-compose -f 'docker-compose.yml' up -d --build 'postgis'`
+- `docker:db:down`: `docker-compose -f 'docker-compose.yml' down`
+
+### Development Dependencies
+
+- `@eslint/js`: `^9.22.0`
+- `@types/jest`: `^29.5.14`
+- `@types/supertest`: `^6.0.2`
+- `dotenv-cli`: `^8.0.0`
+- `eslint`: `^9.22.0`
+- `globals`: `^16.0.0`
+- `jest`: `^29.7.0`
+- `supertest`: `^7.0.0`
+- `ts-jest`: `^29.2.6`
+- `ts-node-app`: `^0.1.0`
+- `tsconfig-paths`: `^4.2.0`
+- `tsup`: `^8.4.0`
+- `tsx`: `^4.19.3`
+- `typescript`: `^5.8.2`
+- `typescript-eslint`: `^8.26.1`
+
 ## Architecture Concepts
 
 ### Clean Architecture
@@ -173,7 +222,7 @@ The main layers are:
 
 ### Domain-Driven Design (DDD)
 
-Domain-Driven Design (DDD) is a software development approach that focuses on modeling the domain of the application based on the real-world business context. 
+Domain-Driven Design (DDD) is a software development approach that focuses on modeling the domain of the application based on the real-world business context.
 It emphasizes collaboration between technical and domain experts to create a shared understanding of the domain and its complexities.
 
 DDD introduces several key concepts:
@@ -185,48 +234,177 @@ DDD introduces several key concepts:
 5. **Services**: Operations that do not naturally fit within entities or value objects.
 6. **Domain Events**: Events that signify something important has happened within the domain.
 
-### Example Structure
+## Layers
+
+### Entity
+
+> Domain-Driven Design (DDD) → Used to represent domain objects.
+
+> Clean Architecture → Belongs to the domain layer (Core).
+
+1. Object with a unique identity.
+2. Mutable state over time.
+3. Compared by its identifier (id) and not by attribute values.
+
+### Value Object
+
+> Domain-Driven Design (DDD) → Used to maintain consistency between entities.
+
+> Principle of Immutability → Value objects should not be altered.
+
+1. Immutable object.
+2. Compared by its content, not by an id.
+3. Encapsulates specific logic within it.
+
+```typescript
+export class Email {
+  private readonly value: string;
+
+  constructor(email: string) {
+    if (!this.isValidEmail(email)) {
+      throw new Error("Invalid email.");
+    }
+    this.value = email.toLowerCase();
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  getValue(): string {
+    return this.value;
+  }
+}
+```
+
+### Aggregate
+
+> Domain-Driven Design (DDD) → Used to maintain consistency between entities.
+
+> Encapsulation → Only the aggregate root can modify its internal entities.
+
+1. Group of related entities treated as a single unit.
+2. Has an "aggregate root" that controls the other entities.
+3. Ensures internal consistency by allowing changes only through the root.
+
+```typescript
+import { User } from "../entities/User";
+
+export class Account {
+  constructor(private owner: User, private balance: number = 0) {}
+
+  deposit(amount: number) {
+    if (amount <= 0) throw new Error("Deposit must be greater than zero.");
+    this.balance += amount;
+  }
+
+  withdraw(amount: number) {
+    if (amount > this.balance) throw new Error("Insufficient balance.");
+    this.balance -= amount;
+  }
+
+  getBalance() {
+    return this.balance;
+  }
+}
+```
+
+### Domain Exceptions (exceptions/)
+
+1. Specific domain errors should have their own classes.
+
+```typescript
+export class DomainException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DomainException";
+  }
+}
+
+export class InsufficientBalanceException extends DomainException {
+  constructor() {
+    super("Insufficient balance.");
+  }
+}
+```
+
+### Interfaces
+
+```typescript
+export interface IUserRepository {
+  save(user: User): Promise<void>;
+  findByEmail(email: string): Promise<User | null>;
+}
+```
+
+- Domain-Driven Design (domain/contracts)
+  - They are in the domain layer because the domain cannot depend on external technologies.
+  - Interfaces are used to define repositories, domain services, and factories.
+- Clean Architecture (application/interfaces)
+  - In Clean Architecture, this layer is usually called "Interfaces" or "Contracts".
+  - It defines Gateways, Repositories, and Services, which will be used by Use Cases.
+- Hexagonal Architecture (core/ports)
+  - In Hexagonal Architecture, this layer is called "Ports".
+  - Ports define how the domain communicates with the external world, but without implementing anything.
+
+### Key Differences
+
+**DDD**: Defines how to model the domain with well-structured business rules.
+
+**Clean Architecture**: Defines the separation into layers to maintain low coupling.
+
+**Hexagonal Architecture**: Defines how the domain communicates with the external world through ports & adapters.
+
+### Example Simple Structure DDD
 
 ```plaintext
 src/
 ├── application/
-│   ├── use-cases/                       # Application use cases
+│   ├── use-cases/
 │   │   ├── create-user.use-case.ts
 │   │   ├── update-user.use-case.ts
 │   │   └── delete-user.use-case.ts
-│   └── dto/                             # Data Transfer Objects
+│   └── dto/
 │       └── user-dto.ts
-├── domain/                              # Domain Layer (Business Rules)
-│   ├── entities/                        # Domain Entities
+├── domain/
+│   ├── entities/
 │   │   └── user.ts
-│   ├── value-objects/                   # Value Objects (e.g., Email, CPF)
+│   ├── value-objects/
 │   │   └── email.ts
-│   ├── aggregates/                      # Domain Aggregates
+│   ├── aggregates/
 │   │   └── user.aggregate.ts
-│   ├── repositories/                    # Domain Repository Interfaces
-│   │   └── user-repository.ts
-│   ├── services/                        # Domain Services (rules involving multiple entities)
-│   │   └── user-service.ts
-│   ├── events/                          # Domain Events
-│   │   └── user-created.event.ts
-│   └── exceptions/                      # Domain-related Exceptions
+│   ├── contracts/
+│   │   └── user.contract.ts
+│   ├── services/
+│   │   └── user.service.ts
+│   ├── events/
+│   │   └── user.created.event.ts
+│   └── exceptions/
 │       └── UserNotFoundException.ts
-├── infrastructure/                      # Technical Implementations (Database, External APIs)
+├── infrastructure/
 │   ├── config/
 │   │   └── app-config.ts
-│   ├── repositories                     # Concrete Repository Implementations
+│   ├── repositories
 │   │   └── UserRepository.ts
-│   ├── logger                           # Logger Implementation
+│   ├── logger
 │   │   └── logger.ts
-│   ├── http                             # Presentation Layer Implementation (API, Web)
+│   ├── http
 │   │   └── server.ts
-│   ├── services                         # Technical Service Implementations
+│   ├── services
 │   │   ├── auth.service.ts
 │   │   └── email.service.ts
-│   ├── database/                        # Database Configuration
+│   ├── database/
 │   │   └── prisma/
 │   │       ├── client.ts
 │   │       └── user-repository.ts
+├── presentation/
+│   ├── controllers/
+│   │   └── user.controller.ts
+│   ├── routes/
+│   │   └── user.routes.ts
+│   └── middlewares/
+│       ├── error-handler.middleware.ts
+│       └── auth.middleware.ts
 ├── shared/
 │   ├── utils/
 │   │   ├── date.util.ts
@@ -243,17 +421,6 @@ src/
 │       └── auth.middleware.ts
 └── main.ts
 ```
-
-#### Summary of Differences
-
-| Feature        | DDD                                          | Clean Architecture                                  |
-| -------------- | -------------------------------------------- | --------------------------------------------------- |
-| Main Focus     | Domain modeling and business rules           | Separation of concerns and minimal coupling         |
-| Organization   | Based on entities, aggregates, services      | Based on independent layers                         |
-| Use Cases      | Apply specific business rules                | Are the central layer of the system                 |
-| Repositories   | Part of the domain (interface and implementation) | Are adapters (not part of the core)                 |
-| Infrastructure | Concrete implementations within the domain   | Infrastructure is separated                         |
-| Dependencies   | May have coupling to ORM                     | Does not depend on external frameworks              |
 
 ### Clean Architecture with Domain-Driven Design (DDD)
 
@@ -341,60 +508,53 @@ Hexagonal Architecture, also known as Ports and Adapters, is a design pattern th
 
 In a Hexagonal Architecture, the core logic of the application is isolated from external systems such as databases, user interfaces, and third-party services. The core interacts with these external systems through well-defined interfaces (ports), and the actual implementation of these interfaces (adapters) can be swapped without affecting the core logic.
 
-Examples of Adapters:
-```ts
-// Input Adapter (Controller)
-import { Request, Response } from 'express';
-import { CreateUserUseCase } from '../../core/use-cases/create-user.use-case';
+| Adapter Type      | Function                                   | Implementation Example             |
+| ----------------- | ------------------------------------------ | ---------------------------------- |
+| Persistence       | Save and retrieve data from the database   | Prisma, Sequelize, MongoDB, Redis  |
+| Controllers       | Adapt HTTP input for use cases             | Express, Fastify, NestJS, HapiJS   |
+| Gateways          | Communication with external services       | Stripe, SendGrid, Twilio, Firebase |
+| Messaging         | Asynchronous communication (message queue) | Kafka, RabbitMQ, AWS SQS           |
+| CLI Adapters      | Command line input (CLI)                   | Commander.js, yargs                |
+| GraphQL Resolvers | Adapters for GraphQL                       | Apollo Server, Mercurius           |
+| WebSockets        | Real-time bidirectional communication      | Socket.io, WebRTC                  |
 
-export class UserController {
-    constructor(private createUserUseCase: CreateUserUseCase) {}
+- When to Use Each Adapter?
 
-    async createUser(req: Request, res: Response): Promise<Response> {
-        const { name, email } = req.body;
-        try {
-            const user = await this.createUserUseCase.execute({ name, email });
-            return res.status(201).json(user);
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
-    }
-}
+- **Persistence**: Use when the system needs to store data in databases like PostgreSQL, MongoDB, Redis.
+- **Controllers**: Use to expose REST endpoints.
+- **Gateways**: Use to consume external APIs (payments, emails, notifications).
+- **Messaging**: Use for asynchronous communication via queues (Kafka, RabbitMQ).
+- **CLI**: Use for terminal input (e.g., administrative scripts).
+- **GraphQL**: Use if the API uses GraphQL instead of REST.
+- **WebSockets**: Use for real-time events (chat, notifications).
 
-// Output Adapter (Repository)
-import { PrismaClient } from '@prisma/client';
-import { UserRepository } from '../../core/ports/repositories/user-repository.port';
-import { User } from '../../core/domain/entities/user';
-
-export class PrismaUserRepository implements UserRepository {
-    private prisma = new PrismaClient();
-
-    async save(user: User): Promise<User> {
-        const savedUser = await this.prisma.user.create({
-            data: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
-        });
-        return new User(savedUser.id, savedUser.name, savedUser.email);
-    }
-
-    // Other repository methods...
-}
-```
+> 🔥 **Final Summary**
+> 📌 Adapters are all the concrete implementations that connect the domain to the external world.
+> 📌 The domain should never depend directly on these implementations.
+> 📌 Each type of adapter has a specific responsibility, avoiding excessive coupling.
 
 #### Example Structure
 
 ```plaintext
 src/
 ├── adapters/
-│   ├── persistence/
-│   │   └── prisma-user.repository.ts
-│   ├── controllers/
-│   │   └── user.controller.ts
-│   └── gateways/
-│       └── email.gateway.ts
+│   ├── persistence
+│   │   ├── PrismaUserRepository.ts
+│   │   └── MongoUserRepository.ts
+│   ├── controllers
+│   │   └── UserController.ts
+│   ├── gateways
+│   │   ├── StripePaymentGateway.ts
+│   │   └── SendGridEmailGateway.ts
+│   ├── messaging
+│   │   ├── KafkaQueueService.ts
+│   │   └── RabbitMQQueueService.ts
+│   ├── cli
+│   │   └── UserCLI.ts
+│   ├── graphql
+│   │   └── UserResolver.ts
+│   ├── websockets
+│   │   └── WebSocketServer.ts
 ├── core/
 │   ├── domain/
 │   │   ├── entities/
@@ -403,8 +563,6 @@ src/
 │   │   │   └── email.ts
 │   │   ├── aggregates/
 │   │   │   └── user.aggregate.ts
-│   │   ├── repositories/
-│   │   │   └── user-repository.ts
 │   │   └── domain-events/
 │   │       ├── domain-event.ts
 │   │       ├── user-created.event.ts
@@ -423,6 +581,21 @@ src/
 ```
 
 This structure ensures that the core business logic is independent of external systems, making it easier to test and maintain. The adapters are responsible for connecting the core to the external systems, allowing for flexibility and scalability in the application.
+
+#### Summary of Differences
+
+✅ DDD → Defines how to model the domain with well-structured business rules.
+✅ Clean Architecture → Defines the separation into layers to maintain low coupling.
+✅ Hexagonal Architecture → Defines how the domain communicates with the external world through ports & adapters.
+
+| Feature        | DDD                                               | Clean Architecture                          | Hexagonal Architecture                                       |
+| -------------- | ------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| Main Focus     | Domain modeling and business rules                | Separation of concerns and minimal coupling | Isolation of domain from external dependencies               |
+| Organization   | Based on entities, aggregates, services           | Based on independent layers                 | Based on Ports & Adapters pattern                            |
+| Use Cases      | Apply specific business rules                     | Are the central layer of the system         | Encapsulated in the domain layer                             |
+| Repositories   | Part of the domain (interface and implementation) | Are adapters (not part of the core)         | Defined as ports (interfaces), implemented by adapters       |
+| Infrastructure | Concrete implementations within the domain        | Infrastructure is separated                 | Implementations reside in Adapters layer                     |
+| Dependencies   | May have coupling to ORM                          | Does not depend on external frameworks      | Domain is framework-agnostic, interfaces bridge dependencies |
 
 ### MVC Architecture
 
@@ -506,44 +679,6 @@ src/
 This structure ensures that the application is modular and each function is responsible for a specific task. The `serverless.yml` file is used to define the configuration for the serverless framework, specifying the functions, events that trigger them, and the resources they require.
 
 Serverless architecture offers several benefits, including reduced operational complexity, automatic scaling, and a pay-as-you-go pricing model. It is particularly well-suited for applications with unpredictable or fluctuating workloads, as it can efficiently handle varying levels of demand without the need for manual scaling.
-
-## Complete Project Setup
-
-When running the `init` command, the project will be set up with the following scripts and dependencies:
-
-### Scripts
-
-- `dev`: `dotenv -e .env.development tsx watch src/main.ts`
-- `start`: `node dist/main.js`
-- `build`: `tsup src/main.ts`
-- `test`: `echo "Error: no test specified" && exit 1`
-- `test:watch`: `dotenv -e .env.test jest -- --watchAll --no-coverage`
-- `docker:dev`: `npm run docker:build:dev && npm run docker:run:dev`
-- `docker:prod`: `npm run docker:build:prod && npm run docker:run:prod`
-- `docker:build:dev`: `docker build --target development -t application-name:dev .`
-- `docker:build:prod`: `docker build --target production -t application-name:prod .`
-- `docker:run:dev`: `docker run -p 3000:3000 -d application-name:dev`
-- `docker:run:prod`: `docker run -d application-name:prod`
-- `docker:db:up`: `docker-compose -f 'docker-compose.yml' up -d --build 'postgis'`
-- `docker:db:down`: `docker-compose -f 'docker-compose.yml' down`
-
-### Development Dependencies
-
-- `@eslint/js`: `^9.22.0`
-- `@types/jest`: `^29.5.14`
-- `@types/supertest`: `^6.0.2`
-- `dotenv-cli`: `^8.0.0`
-- `eslint`: `^9.22.0`
-- `globals`: `^16.0.0`
-- `jest`: `^29.7.0`
-- `supertest`: `^7.0.0`
-- `ts-jest`: `^29.2.6`
-- `ts-node-app`: `^0.1.0`
-- `tsconfig-paths`: `^4.2.0`
-- `tsup`: `^8.4.0`
-- `tsx`: `^4.19.3`
-- `typescript`: `^5.8.2`
-- `typescript-eslint`: `^8.26.1`
 
 ## Conclusion
 

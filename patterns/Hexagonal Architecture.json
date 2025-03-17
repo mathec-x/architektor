@@ -7,10 +7,10 @@
         },
         "core": {
             "domain": {
-                "entities": "Domain entities (User, etc.)",
-                "value-objects": "Value objects (Email, etc.)",
-                "aggregates": "Aggregates (User aggregate, etc.)",
-                "repositories": "Domain repositories",
+                "entities/": "Domain entities (User, etc.)",
+                "value-objects/": "Value objects (Email, etc.)",
+                "aggregates/": "Aggregates (User aggregate, etc.)",
+                "exceptions/": "Domain-related Exceptions",
                 "domain-events": {
                     "domain-event.ts": "Base domain event",
                     "user-created.event.ts": "User created event",
