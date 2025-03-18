@@ -489,26 +489,26 @@ src/
 │   └── services/
 │       ├── email.service.ts
 │       └── logger.service.ts
-│   ├── presentaion/
-│   │   ├── controllers/
-│   │   │   ├── user.controller.ts
-│   │   │   └── product.controller.ts
-│   │   ├── routes/
-│   │   │   ├── user.routes.ts
-│   │   │   └── product.routes.ts
-│   │   ├── middlewares/
-│   │   │   ├── error-handler.middleware.ts
-│   │   │   └── auth.middleware.ts
-│   │   ├── graphql/
-│   │   │   ├── resolvers/
-│   │   │   │   ├── user.resolver.ts
-│   │   │   │   └── product.resolver.ts
-│   │   │   └── schema.ts
-│   │   ├── websockets/
-│   │   │   ├── socket-server.ts
-│   │   │   └── socket-events.ts
-│   │   └── cli/
-│   │       └── user-cli.ts
+├── presentaion/
+│   ├── controllers/
+│   │   ├── user.controller.ts
+│   │   └── product.controller.ts
+│   ├── routes/
+│   │   ├── user.routes.ts
+│   │   └── product.routes.ts
+│   ├── middlewares/
+│   │   ├── error-handler.middleware.ts
+│   │   └── auth.middleware.ts
+│   ├── graphql/
+│   │   ├── resolvers/
+│   │   │   ├── user.resolver.ts
+│   │   │   └── product.resolver.ts
+│   │   └── schema.ts
+│   ├── websockets/
+│   │   ├── socket-server.ts
+│   │   └── socket-events.ts
+│   └── cli/
+│       └── user-cli.ts
 ├── shared/
 │   ├── config/
 │   │   └── env.ts
