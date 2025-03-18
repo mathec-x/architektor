@@ -1,6 +1,3 @@
-// infrastructure layer
-// only if not presentation layer in DDD
-
 import express from 'express';
 const app = express();
 
