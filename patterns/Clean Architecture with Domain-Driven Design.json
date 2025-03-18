@@ -23,11 +23,6 @@
                     "user.repository.ts": "UserRepository implementation"
                 }
             },
-            "http": {
-                "controllers.ts": "API controllers",
-                "interfaces.ts": "Interfaces related to the HTTP context",
-                "routes.ts": "API route configuration"
-            },
             "queue": {
                 "bull.config.ts": "Bull configuration for message queues",
                 "process-job.ts": "Job processing in queues"
@@ -35,6 +30,28 @@
             "repositories": "Repository implementations based on Domain contracts",
             "config": "Infrastructure configurations",
             "services": "External service implementations (Email, Cache, etc.)"
+        },
+        "presentation": {
+            "ExpressApp.ts": "example express application setup",
+            "controllers": {
+                "user.controller.ts": "API Controllers"
+            },
+            "middlewares": {
+                "auth.middleware.ts": "Middleware functions",
+                "error-handler.middleware.ts": "Middleware functions"
+            },
+            "routes": {
+                "user.routes.ts": "API Route Configuration"
+            },
+            "graphql": {
+                "user.resolver.ts": "GraphQL resolvers"
+            },
+            "socket": {
+                "dashboard.gatewat.ts": "Socket.io event handlers"
+            },
+            "cli": {
+                "command.ts": "CLI commands"
+            }
         },
         "shared": {
             "config": "Application configurations",
@@ -51,7 +68,8 @@
             "guards": "Global guards",
             "interceptors": "Global interceptors",
             "mappers": "Object mapping (DTOs to Entities and vice versa)",
-            "middlewares": "Generic application middlewares",
+            "http": "HTTP utilities if not presentation layer",
+            "middlewares": "Generic application middlewares if not presentation layer",
             "pipes": "Global pipes",
             "types": "Shared types",
             "utils": "Helper and utility functions"

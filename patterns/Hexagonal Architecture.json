@@ -2,15 +2,19 @@
     "src": {
         "adapters": {
             "persistence": "Repository implementations (Prisma, etc.)",
-            "controllers": "HTTP controllers",
-            "gateways": "External API gateways"
+            "controllers": {
+                "ExpressAdapter.ts": "HTTP controllers (ExpressAdapter, routes etc.)"
+            },
+            "gateways": {
+                "KafkaGateway.ts": "External API gateways (Kafka, RabbitMQ, APIs, SendGrid, etc.)"
+            }
         },
         "core": {
             "domain": {
-                "entities/": "Domain entities (User, etc.)",
-                "value-objects/": "Value objects (Email, etc.)",
-                "aggregates/": "Aggregates (User aggregate, etc.)",
-                "exceptions/": "Domain-related Exceptions",
+                "entities": "Domain entities (User, etc.)",
+                "value-objects": "Value objects (Email, etc.)",
+                "aggregates": "Aggregates (User aggregate, etc.)",
+                "exceptions": "Domain-related Exceptions",
                 "domain-events": {
                     "domain-event.ts": "Base domain event",
                     "user-created.event.ts": "User created event",

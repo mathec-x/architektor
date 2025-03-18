@@ -19,18 +19,6 @@
             "services/": "Domain services (business rules affecting multiple entities)",
             "value-objects/": "Value objects (Email, CPF, etc.)"
         },
-        "presentation": {
-            "controllers/": {
-                "user.controller.ts": "API Controllers"
-            },
-            "middlewares/": {
-                "auth.middleware.ts": "Middleware functions",
-                "error-handler.middleware.ts": "Middleware functions"
-            },
-            "routes/": {
-                "user.routes.ts": "API Route Configuration"
-            }
-        },
         "infrastructure/": {
             "config/": {
                 "app-config.ts": "Technical Implementations (Database, External APIs)"
@@ -42,7 +30,8 @@
                 "logger.ts": "Logger Implementation"
             },
             "http/": {
-                "server.ts": "Presentation Layer Implementation (API, Web)"
+                "server.ts": "Presentation Layer Implementation (API, Web)",
+                "ExpressServer.ts": "Presentation Layer Implementation (API, Web)"
             },
             "services/": {
                 "auth.service.ts": "Technical Service Implementations",
