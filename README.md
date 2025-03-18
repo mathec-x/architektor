@@ -2,6 +2,17 @@
 
 The `ts-node-app` project is a CLI for generating components in DDD, Hexagonal, Clean Architecture, and MVC architectures. Below are the available features and how to use them.
 
+## Getting Started
+
+Before using any other commands, the first step is to initialize your TypeScript project.
+This sets up all necessary dependencies and configurations.
+
+```sh
+npx ts-node-app init typescript
+```
+
+This command will prepare your project with the required setup for a TypeScript backend application.
+
 ## Index
 
 - [Installation](#installation)

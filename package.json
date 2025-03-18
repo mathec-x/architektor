@@ -1,6 +1,6 @@
 {
   "name": "ts-node-app",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "CLI para geração de componentes em arquiteturas DDD, hexagonal ou Clean Architecture ...",
   "main": "./bin/index.js",
   "scripts": {
