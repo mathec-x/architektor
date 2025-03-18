@@ -27,14 +27,15 @@ The `ts-node-app` project is a CLI for generating components in DDD, Hexagonal, 
 - [Architecture Concepts](#architecture-concepts)
   - [Clean Architecture](#clean-architecture)
   - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
-    - [Layers](#layers)
-      - [Entity](#entity)
-      - [Value Object](#value-object)
-      - [Aggregate](#aggregate)
-      - [Domain Exceptions (exceptions/)](#domain-exceptions-exceptions)
-      - [Interfaces](#interfaces)
-  - [Example Simple Structure DDD](#example-simple-structure-ddd)
-  - [Clean Architecture with Domain-Driven Design (DDD)](#clean-architecture-with-domain-driven-design-ddd)
+  - [Some Concepts about Layers and Components](#some-concepts-about-layers-and-components)
+    - [Entity](#entity)
+    - [Value Object](#value-object)
+    - [Aggregate](#aggregate)
+    - [Domain Exceptions (exceptions/)](#domain-exceptions-exceptions)
+    - [Interfaces](#interfaces)
+    - [Presentation](#presentation)
+      - [Example Simple Structure DDD](#example-simple-structure-ddd)
+      - [Clean Architecture with Domain-Driven Design (DDD)](#clean-architecture-with-domain-driven-design-ddd)
   - [Hexagonal Architecture](#hexagonal-architecture)
     - [Example Structure](#example-structure)
   - [MVC Architecture](#mvc-architecture)
@@ -234,7 +235,7 @@ DDD introduces several key concepts:
 5. **Services**: Operations that do not naturally fit within entities or value objects.
 6. **Domain Events**: Events that signify something important has happened within the domain.
 
-## Layers
+## Some Concepts about Layers and Components
 
 ### Entity
 
@@ -347,6 +348,22 @@ export interface IUserRepository {
   - In Hexagonal Architecture, this layer is called "Ports".
   - Ports define how the domain communicates with the external world, but without implementing anything.
 
+### Presentation
+
+The Presentation layer is responsible for the application's input interface, meaning it receives user requests and translates them into use cases (Use Cases or Application Services).
+
+📌 It appears in architectures like Clean Architecture and Hexagonal, it is not a central concept of DDD!
+📌 It does NOT contain business rules! Its only role is to interpret inputs and direct them to the use cases.
+It can contain different types of input adapters, depending on the type of interface:
+
+| Input Type  | Example                                 |
+| ----------- | --------------------------------------- |
+| REST API    | Controllers (Express, Fastify, NestJS)  |
+| GraphQL API | Resolvers (Apollo, Mercurius)           |
+| CLI         | Terminal commands (Commander.js, Yargs) |
+| WebSockets  | Real-time connection management         |
+| Messaging   | Message queues (Kafka, RabbitMQ)        |
+
 ### Key Differences
 
 **DDD**: Defines how to model the domain with well-structured business rules.
@@ -397,14 +414,6 @@ src/
 │   │   └── prisma/
 │   │       ├── client.ts
 │   │       └── user-repository.ts
-├── presentation/
-│   ├── controllers/
-│   │   └── user.controller.ts
-│   ├── routes/
-│   │   └── user.routes.ts
-│   └── middlewares/
-│       ├── error-handler.middleware.ts
-│       └── auth.middleware.ts
 ├── shared/
 │   ├── utils/
 │   │   ├── date.util.ts
@@ -480,6 +489,26 @@ src/
 │   └── services/
 │       ├── email.service.ts
 │       └── logger.service.ts
+│   ├── presentaion/
+│   │   ├── controllers/
+│   │   │   ├── user.controller.ts
+│   │   │   └── product.controller.ts
+│   │   ├── routes/
+│   │   │   ├── user.routes.ts
+│   │   │   └── product.routes.ts
+│   │   ├── middlewares/
+│   │   │   ├── error-handler.middleware.ts
+│   │   │   └── auth.middleware.ts
+│   │   ├── graphql/
+│   │   │   ├── resolvers/
+│   │   │   │   ├── user.resolver.ts
+│   │   │   │   └── product.resolver.ts
+│   │   │   └── schema.ts
+│   │   ├── websockets/
+│   │   │   ├── socket-server.ts
+│   │   │   └── socket-events.ts
+│   │   └── cli/
+│   │       └── user-cli.ts
 ├── shared/
 │   ├── config/
 │   │   └── env.ts
