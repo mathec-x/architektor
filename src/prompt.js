@@ -113,7 +113,7 @@ export class Prompt {
    * @param {string} input
    */
   #parseInput(input) {
-    if (input === "y") return true;
+    if (["\r", "\n", "y"].includes(input)) return true;
     if (input === "a") {
       this.yesToAll = true;
       return true;
