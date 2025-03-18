@@ -1,5 +1,5 @@
 import { prompts, settings } from "./constants.js";
-import { Logger } from "./logger.js";
+import { Logger, styled } from "./logger.js";
 
 export class Installers {
   /**
@@ -146,8 +146,8 @@ export class Installers {
    * @param {string} framework
    */
   async installFramework(framework) {
-    let mainEntry;
     this.logger.info(`Installing ${framework}...`);
+    let copies = [];
     switch (framework) {
       case "Express":
         this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
@@ -156,15 +156,50 @@ export class Installers {
         this.prompt.spawn("npm", this.install.save(["express"]), {
           stdio: "inherit",
         });
-        mainEntry = this.fileManager.readdir("./src", { recursive: true }).find((e) => e.endsWith("app.config.ts"));
-        if (mainEntry) {
-          this.fileManager.cpFromPackageToRepo("/defaults/express/app.config.ts", `src/${mainEntry}`);
+        copies = this.copyExampleFiles();
+        // clean with presentation
+        if (copies.includes("ExpressApp.ts"))
+          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wpresentation.ts", "./src/main.ts");
+        // hexagonal adapter
+        if (copies.includes("ExpressAdapter.ts"))
+          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wadapter.ts", "./src/main.ts");
+        // single ddd
+        if (copies.includes("ExpressServer.ts"))
+          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wddd.ts", "./src/main.ts");
+        // mvc or clean without presentation
+        if (copies.includes("app.config.ts"))
+          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wclean.ts", "./src/main.ts");
+
+        // e2e test
+        if (!this.fileManager.isFile("./tests/app-e2e.spec.ts")) {
+          this.fileManager.cpFromPackageToRepo("/defaults/examples/app-e2e.spec.ts", "tests/app-e2e.spec.ts", {
+            recursive: true,
+          });
         }
-        this.fileManager.cpFromPackageToRepo("/defaults/express/app-e2e.spec.ts", "tests/app-e2e.spec.ts");
         break;
       default:
         this.logger.error("Invalid framework:", framework);
         break;
+    }
+  }
+
+  copyExampleFiles() {
+    if (this.fileManager.exists("src")) {
+      const copies = [];
+      const path = this.fileManager.dirname + "/defaults/examples";
+      const exampleFiles = this.fileManager.readdir(path, {
+        recursive: true,
+      });
+      for (const dir of this.fileManager.readdir("src", { recursive: true })) {
+        const filename = exampleFiles.find((e) => dir.endsWith(e));
+        if (!filename) continue;
+
+        copies.push(filename);
+        this.logger.info(`Copying example file: ${styled("white", "src/" + dir)}`);
+        this.fileManager.cpFromPackageToRepo(`/defaults/examples/${filename}`, `src/${dir}`);
+      }
+
+      return copies;
     }
   }
 
