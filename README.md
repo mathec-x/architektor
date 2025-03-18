@@ -11,7 +11,9 @@ This sets up all necessary dependencies and configurations.
 npx ts-node-app init typescript
 ```
 
-This command will prepare your project with the required setup for a TypeScript backend application.
+> This command will prepare your project with the required setup for a TypeScript backend application.
+> The structure of the setup will be saved in an `architecture.json` file.
+> You can modify this file before running the `generate` command to adjust the structure to better suit your needs.
 
 ## Index
 
