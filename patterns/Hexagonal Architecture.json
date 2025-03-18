@@ -24,7 +24,7 @@
             "use-cases": "Use cases (Create user, etc.)",
             "ports": {
                 "repositories": "Repository ports",
-                "services": {}
+                "services": "Service ports"
             }
         },
         "infrastructure": {
