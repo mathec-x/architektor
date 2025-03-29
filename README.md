@@ -15,6 +15,22 @@ npx ts-node-app init typescript
 > The structure of the setup will be saved in an `architecture.json` file.
 > You can modify this file before running the `generate` command to adjust the structure to better suit your needs.
 
+```bash
+Usage: ts-node-app [options] [command]
+
+Options:
+  -h, --help             display help for command
+
+Commands:
+  pull [options] <path>  Generate 'architecture.json' file by path argument and save it in the root of the project
+                         you can ignore some files or directories by comma separated and regex patterns ex: package?,node_modules
+  push [options] [type]  Push structure to the project
+  generate [options]     Apply structure from file architecture.json
+  print [options]        Print current structure file architecture.json
+  init [options] [type]  Setup all dependencies for backend TypeScript project
+  help [command]         display help for command
+```
+
 ## Index
 
 - [Installation](#installation)
