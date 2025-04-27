@@ -19,9 +19,9 @@ export class Installers {
     if (!this.fileManager.isFile("package.json")) {
       this.logger.info("Init Node project...");
 
+      console.log();
       this.prompt.spawn("npm", this.install.init(), {
-        stdio: "inherit",
-        input: "y\n",
+        stdio: "inherit"
       });
     }
 
@@ -100,7 +100,10 @@ export class Installers {
       ...currentSettings.data,
     });
 
-    this.fileManager.cpFromPackageToRepo("/defaults/eslint.config.mjs", "eslint.config.mjs");
+    /** 
+     * @todo let dinamic copy  
+     */
+    this.fileManager.cpFromPackageToRepo("/defaults/eslint.config.hex.mjs", "eslint.config.mjs");
     this.logger.info("Eslint installed successfully!");
   }
 
@@ -147,7 +150,7 @@ export class Installers {
    */
   async installFramework(framework) {
     this.logger.info(`Installing ${framework}...`);
-    let copies = [];
+    const copies = this.copyExampleFiles();
     switch (framework) {
       case "Express":
         this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
@@ -156,7 +159,6 @@ export class Installers {
         this.prompt.spawn("npm", this.install.save(["express"]), {
           stdio: "inherit",
         });
-        copies = this.copyExampleFiles();
         // clean with presentation
         if (copies.includes("ExpressApp.ts"))
           this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wpresentation.ts", "./src/main.ts");
@@ -205,8 +207,8 @@ export class Installers {
 
   install = {
     init: () => {
-      const args = ["init"];
-      if (this.prompt.yesToAll) args.push("-y");
+      const args = ["init", "-y"];
+      // if (this.prompt.yesToAll) args.push("-y");
       return args;
     },
     /**

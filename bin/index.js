@@ -28,7 +28,7 @@ program
   .version(version)
   .description(
     "Generate 'architecture.json' file by path argument and save it in the root of the project" +
-      "\nyou can ignore some files or directories by comma separated and regex patterns ex: package?,node_modules"
+    "\nyou can ignore some files or directories by comma separated and regex patterns ex: package?,node_modules"
   )
   .argument("<path>", "Path to the project root directory ex: ./src or ./")
   .option("-v, --verbose", "Print more information")

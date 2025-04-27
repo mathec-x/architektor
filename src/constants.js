@@ -28,7 +28,7 @@ export const settings = {
     "ts-node-app",
     "dotenv-cli",
   ],
-  eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint"],
+  eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint", "eslint-plugin-boundaries"],
   stages: ["test", "development", "staging", "production"],
   scripts: {
     dev: "dotenv -e .env.development tsx watch src/main.ts",
