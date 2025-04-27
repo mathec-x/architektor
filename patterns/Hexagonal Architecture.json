@@ -2,35 +2,43 @@
     "src": {
         "adapters": {
             "persistence": "Repository implementations (Prisma, etc.)",
+            "modules": "Module implementations (NestJS, etc.)",
             "controllers": {
-                "ExpressAdapter.ts": "HTTP controllers (ExpressAdapter, routes etc.)"
+                "ExpressAdapter.ts": "HTTP controllers (ExpressAdapter, routes, etc.)"
             },
-            "gateways": {
-                "KafkaGateway.ts": "External API gateways (Kafka, RabbitMQ, APIs, SendGrid, etc.)"
-            }
+            "gateways": "External API gateways (Kafka, RabbitMQ, APIs, SendGrid, etc.)",
+            "_adapters.md": "Concrete implementations of the application ports."
+        },
+        "application": {
+            "ports": {
+                "repositories": "Repository interfaces (UserRepository, etc.)",
+                "services": "Service interfaces (UserService, etc.)",
+                "gateways": "Gateway interfaces (KafkaGateway, etc.)",
+                "_ports.md": "Interfaces for the application layer"
+            },
+            "dtos": "Data Transfer Objects (UserDTO, etc.)",
+            "services": "Application services (UserService, etc.)",
+            "mappers": "Mappers (UserMapper, etc.)",
+            "validators": "Validation classes (UserValidator, etc.)",
+            "use-cases": "Use cases (CreateUser, etc.)"
         },
         "core": {
-            "domain": {
-                "entities": "Domain entities (User, etc.)",
-                "value-objects": "Value objects (Email, etc.)",
-                "aggregates": "Aggregates (User aggregate, etc.)",
-                "exceptions": "Domain-related Exceptions",
-                "domain-events": {
-                    "domain-event.ts": "Base domain event",
-                    "user-created.event.ts": "User created event",
-                    "user-email-changed.event.ts": "User email changed event"
-                }
+            "entities": "Represent main objects and concepts of the system",
+            "services": {
+                "_domain-services.md": "Domain services, small classes that encapsulate specific business rules"
             },
-            "use-cases": "Use cases (Create user, etc.)",
-            "ports": {
-                "repositories": "Repository ports",
-                "services": "Service ports"
-            }
+            "value-objects": {
+                "_value-objects.md": "Value objects are immutable objects that represent a descriptive aspect of the domain with no conceptual identity."
+            },
+            "aggregates": "Aggregate roots that manage the lifecycle of related entities.",
+            "exceptions": "Domain-related Exceptions",
+            "domain-events": "Domain events that represent something that has happened in the domain."
         },
         "infrastructure": {
             "http": "HTTP framework configuration (Koa, Express, etc.)",
             "database": "Database configuration (Prisma, etc.)",
-            "config": "General configuration (Logger, env, etc.)"
+            "config": "General configuration (Logger, env, etc.)",
+            "bootstrap": "Application bootstrap (server.ts, NestBootstrap, etc.)"
         },
         "main.ts": "Application entry point"
     },

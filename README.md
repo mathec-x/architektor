@@ -562,83 +562,79 @@ This structure ensures that the core business logic is isolated from external de
 
 ### Hexagonal Architecture
 
-Hexagonal Architecture, also known as Ports and Adapters, is a design pattern that aims to create loosely coupled application components that can be easily connected to their software environment through ports and adapters. This architecture promotes separation of concerns, making the application more modular, testable, and maintainable.
+Hexagonal Architecture, also known as Ports and Adapters, is a design pattern that aims to create loosely coupled application components that can easily interact with external systems through ports and adapters.
+This promotes separation of concerns, making the application more modular, testable, and maintainable.
 
-In a Hexagonal Architecture, the core logic of the application is isolated from external systems such as databases, user interfaces, and third-party services. The core interacts with these external systems through well-defined interfaces (ports), and the actual implementation of these interfaces (adapters) can be swapped without affecting the core logic.
+In Hexagonal Architecture, the core logic of the application is completely isolated from external systems such as databases, user interfaces, and third-party services.
+The core interacts with these systems only through well-defined interfaces (ports), while the actual implementations (adapters) can be swapped without affecting the business logic.
 
-| Adapter Type      | Function                                   | Implementation Example             |
-| ----------------- | ------------------------------------------ | ---------------------------------- |
-| Persistence       | Save and retrieve data from the database   | Prisma, Sequelize, MongoDB, Redis  |
-| Controllers       | Adapt HTTP input for use cases             | Express, Fastify, NestJS, HapiJS   |
-| Gateways          | Communication with external services       | Stripe, SendGrid, Twilio, Firebase |
-| Messaging         | Asynchronous communication (message queue) | Kafka, RabbitMQ, AWS SQS           |
-| CLI Adapters      | Command line input (CLI)                   | Commander.js, yargs                |
-| GraphQL Resolvers | Adapters for GraphQL                       | Apollo Server, Mercurius           |
-| WebSockets        | Real-time bidirectional communication      | Socket.io, WebRTC                  |
+| **Adapter Type**      | **Function**                              | **Implementation Example**          |
+|------------------------|-------------------------------------------|--------------------------------------|
+| **Persistence**        | Save and retrieve data                   | Prisma, Sequelize, MongoDB, Redis   |
+| **Controllers**        | Adapt HTTP input for use cases           | Express, Fastify, NestJS, HapiJS    |
+| **Gateways**           | Communication with external services     | Stripe, SendGrid, Twilio, Firebase  |
+| **Messaging**          | Asynchronous communication (queues)      | Kafka, RabbitMQ, AWS SQS            |
+| **CLI Adapters**       | Command line input                       | Commander.js, yargs                 |
+| **GraphQL Resolvers**  | Adapt GraphQL input and output           | Apollo Server, Mercurius            |
+| **WebSockets**         | Real-time bidirectional communication    | Socket.io, WebRTC                   |
 
-- When to Use Each Adapter?
-
-- **Persistence**: Use when the system needs to store data in databases like PostgreSQL, MongoDB, Redis.
-- **Controllers**: Use to expose REST endpoints.
-- **Gateways**: Use to consume external APIs (payments, emails, notifications).
-- **Messaging**: Use for asynchronous communication via queues (Kafka, RabbitMQ).
-- **CLI**: Use for terminal input (e.g., administrative scripts).
-- **GraphQL**: Use if the API uses GraphQL instead of REST.
-- **WebSockets**: Use for real-time events (chat, notifications).
+- When to Use Each Adapter
+- **Persistence**: Used for storing or retrieving data from databases or caches (e.g., PostgreSQL, MongoDB, Redis).
+- **Controllers**: Handle HTTP requests and expose REST endpoints for client communication.
+- **Gateways**: Facilitate interaction with external APIs (e.g., payments, emails, notifications).
+- **Messaging**: Enable asynchronous communication through message queues (e.g., Kafka, RabbitMQ).
+- **CLI**: Provide command-line interfaces for interacting with the system.
+- **GraphQL**: Expose GraphQL endpoints for API communication instead of REST.
+- **WebSockets**: Support real-time communication for use cases like chat applications or live notifications.
 
 > 🔥 **Final Summary**
-> 📌 Adapters are all the concrete implementations that connect the domain to the external world.
-> 📌 The domain should never depend directly on these implementations.
-> 📌 Each type of adapter has a specific responsibility, avoiding excessive coupling.
+> 📌 Adapters are the concrete implementations that connect the domain to the outside world.
+> 📌 The core domain should never depend directly on these external implementations.
+> 📌 Each adapter type serves a specific responsibility, ensuring flexibility and reducing coupling.
 
 #### Example Structure
 
-```plaintext
+```bash
 src/
 ├── adapters/
-│   ├── persistence
-│   │   ├── PrismaUserRepository.ts
-│   │   └── MongoUserRepository.ts
-│   ├── controllers
-│   │   └── UserController.ts
-│   ├── gateways
-│   │   ├── StripePaymentGateway.ts
-│   │   └── SendGridEmailGateway.ts
-│   ├── messaging
-│   │   ├── KafkaQueueService.ts
-│   │   └── RabbitMQQueueService.ts
-│   ├── cli
-│   │   └── UserCLI.ts
-│   ├── graphql
-│   │   └── UserResolver.ts
-│   ├── websockets
-│   │   └── WebSocketServer.ts
+│   ├── persistence/              # Repository implementations (Prisma, Sequelize, etc.)
+│   ├── modules/                  # Module implementations (NestJS modules, etc.)
+│   ├── controllers/              # HTTP controllers (Express adapters, route handlers)
+│   └── gateways/                 
+│       ├── RabbitMQGateway.ts    # Message queue gateways (RabbitMQ, Kafka, etc.)
+│       ├── AWSGateway.ts         # AWS services integration (S3, SNS, etc.)
+│       └── KafkaGateway.ts       # External API gateways (Kafka, SendGrid, etc.)
+├── application/
+│   ├── ports/                    # Interfaces for the application layer
+│   ├── services/                 # Application services (UserService, etc.)
+│   ├── dtos/                     # Data Transfer Objects (UserDTO, etc.)
+│   ├── mappers/                  # DTO mappers (UserMapper, etc.)
+│   ├── validators/               # DTO validation classes (UserValidator, etc.)
+│   └── use-cases/                # Use cases (CreateUser, UpdateUser, etc.)
 ├── core/
-│   ├── domain/
-│   │   ├── entities/
-│   │   │   └── user.ts
-│   │   ├── value-objects/
-│   │   │   └── email.ts
-│   │   ├── aggregates/
-│   │   │   └── user.aggregate.ts
-│   │   └── domain-events/
-│   │       ├── domain-event.ts
-│   │       ├── user-created.event.ts
-│   │       └── user-email-changed.event.ts
-│   └── use-cases/
-│   │   ├── create-user.use-case.ts
-│   │   ├── update-user.use-case.ts
-│   └── ports/
-│       └── repositories/
-│       └── user-repository.port.ts
+│   ├── entities/                 # Core domain entities (User, Vehicle, etc.)
+│   ├── services/                 # Domain services (encapsulate specific business logic)
+│   ├── value-objects/            # Immutable domain values (CPF, PlateNumber, etc.)
+│   ├── aggregates/               # Aggregate roots that manage entity lifecycles
+│   ├── exceptions/               # Domain-specific exceptions
+│   └── domain-events/            # Domain event definitions
+│       ├── domain-event.ts
+│       ├── user-created.event.ts
+│       └── user-email-changed.event.ts
 ├── infrastructure/
-│   ├── http/
-│   ├── database/
-│   └── config/
-└── main.ts
+│   ├── http/                     # HTTP server and middleware setup (Express, Fastify, etc.)
+│   ├── database/                 # Database configurations (Prisma client, etc.)
+│   ├── config/                   # Environment and general configurations (logger, env, etc.)
+│   └── bootstrap/                # Application bootstrap logic (server.ts, NestJS bootstrapping)
+└── main.ts                        # Application entry point
+tests/
+└── main-e2e.spec.ts               # Main end-to-end tests
 ```
 
-This structure ensures that the core business logic is independent of external systems, making it easier to test and maintain. The adapters are responsible for connecting the core to the external systems, allowing for flexibility and scalability in the application.
+This structure ensures that the core business logic remains independent from external systems, making it easier to test, maintain, and evolve over time.
+ - The `core` layer holds the domain model and domain services.
+ - The `application` layer orchestrates the use cases.
+ - The `adapters` provide the necessary bridges to the external world.
 
 #### Summary of Differences
 
