@@ -1,4 +1,4 @@
-import { ExpressApp } from './presentation/ExpressApp';
+import { ExpressApp } from '@/presentation/ExpressApp';
 
 const server = new ExpressApp();
 const PORT = process.env.PORT || 3000;

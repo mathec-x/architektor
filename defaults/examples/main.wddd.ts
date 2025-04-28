@@ -1,4 +1,4 @@
-import { ExpressServer } from './infrastructure/http/ExpressServer';
+import { ExpressServer } from '@/infrastructure/http/ExpressServer';
 
 const server = new ExpressServer();
 const PORT = process.env.PORT || 3000;
