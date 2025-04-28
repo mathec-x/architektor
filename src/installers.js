@@ -74,6 +74,7 @@ export class Installers {
     this.fileManager.cpFromPackageToRepo("/defaults/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
     this.fileManager.cpFromPackageToRepo("/defaults/docker-compose.yml", "docker-compose.yml");
+    this.fileManager.cpFromPackageToRepo("/defaults/env.d.ts", "./src/@types/env.d.ts");
     for (const s of settings.stages) {
       if (!this.fileManager.isFile(`.env.${s}`)) {
         this.logger.info(`Creating .env.${s}....`);
