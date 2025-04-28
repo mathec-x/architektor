@@ -1,7 +1,7 @@
-import { Logger } from "./logger.js";
+import { Logger, styled } from "./logger.js";
 import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { basename, dirname, join } from "path";
 import { cwd } from "process";
 import { FileJson } from "./fileJson.js";
 import { FileText } from "./fileText.js";
@@ -59,10 +59,15 @@ export class FileManager {
    * @param {string} destination
    * @param {import("fs").CopySyncOptions} options
    */
-  cpFromPackageToRepo(source, destination, options = {}) {
+  cpFromPackageToRepo(source, destination, options = {}, forceOverride = false) {
     source = join(this.dirname, source);
     destination = join(this.cwd, destination);
-    this.logger.verbose(`Copying ${source} to ${destination}`);
+    if (this.exists(destination) && !forceOverride) {
+      this.logger.verbose(`Destination ${basename(destination)} already exists, skipping copy.`);
+      return;
+    }
+
+    this.logger.verbose(styled("blue", `Copying ${basename(source)} to '${destination}'`));
     return cpSync(source, destination, options);
   }
 
