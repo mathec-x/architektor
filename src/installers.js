@@ -36,6 +36,7 @@ export class Installers {
     if (await this.prompt.confirm(prompts.defaultConfig)) {
       await this.prompt.delay(355);
       await this.defaultConfig();
+      await this.docker();
     }
 
     this.logger.info("Project initialized successfully!");
@@ -71,10 +72,6 @@ export class Installers {
     this.fileManager.makeJsonFileIfNotExists(".prettierrc", settings.prettier);
     this.fileManager.makeFileIfNotExists(".gitignore", settings.gitignore);
     this.fileManager.cpFromPackageToRepo("/defaults/jest.config.js", "jest.config.js");
-    this.fileManager.cpFromPackageToRepo("/defaults/.dockerignore", ".dockerignore");
-    this.fileManager.cpFromPackageToRepo("/defaults/Dockerfile", "Dockerfile");
-    this.fileManager.cpFromPackageToRepo("/defaults/docker-compose.yml", "docker-compose.yml");
-    this.fileManager.cpFromPackageToRepo("/defaults/env.d.ts", "./src/@types/env.d.ts");
     for (const s of settings.stages) {
       if (!this.fileManager.isFile(`.env.${s}`)) {
         this.logger.info(`Creating .env.${s}....`);
@@ -113,9 +110,6 @@ export class Installers {
    */
   async typescript(nodeVersion) {
     const { compilerOptions, tsLibs } = settings;
-
-    this.logger.info(`Installing ${tsLibs}...`);
-
     this.prompt.spawn("npm", this.install.dev(tsLibs), {
       stdio: "inherit",
     });
@@ -136,6 +130,8 @@ export class Installers {
     }
     console.log("\n");
 
+    this.fileManager.cpFromPackageToRepo("/defaults/env.d.ts", "./src/@types/env.d.ts");
+
     currentTsConfig.set("compilerOptions", {
       ...currentTsConfig.get("compilerOptions"),
       ...compilerOptions,
@@ -145,40 +141,72 @@ export class Installers {
     this.logger.info("TypeScript installed successfully!");
   }
 
+  async express() {
+    this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
+      stdio: "inherit",
+    });
+    this.prompt.spawn("npm", this.install.save(["express"]), {
+      stdio: "inherit",
+    });
+    const copies = this.copyExampleFiles();
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", "./src/adapters/http/ExpressAdapter.ts");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressRouteAdapter.ts", "./src/adapters/http/ExpressRouteAdapter.ts");
+
+    // clean with presentation
+    if (copies.includes("ExpressApp.ts"))
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wpresentation.ts", "./src/main.ts");
+    // hexagonal adapter
+    if (copies.includes("ExpressAdapter.ts"))
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wadapter.ts", "./src/main.ts");
+    // single ddd
+    if (copies.includes("ExpressServer.ts"))
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wddd.ts", "./src/main.ts");
+    // mvc or clean without presentation
+    if (copies.includes("app.config.ts"))
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wclean.ts", "./src/main.ts");
+
+    // e2e test
+    if (!this.fileManager.isFile("./tests/app-e2e.spec.ts")) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/app-e2e.spec.ts", "tests/app-e2e.spec.ts", {
+        recursive: true,
+      });
+    }
+  }
+
+  async loggerService() {
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerAdapter.ts", "./src/adapters/logger/LoggerAdapter.ts");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerService.ts", "./src/application/services/logger/LoggerService.ts");
+  }
+
+  async docker() {
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/.dockerignore", ".dockerignore");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/Dockerfile", "Dockerfile");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/docker-compose.yml", "docker-compose.yml");
+  }
+
   /**
    *
    * @param {string} framework
    */
   async installFramework(framework) {
-    this.logger.info(`Installing ${framework}...`);
-    const copies = this.copyExampleFiles();
-    switch (framework) {
-      case "Express":
-        this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
-          stdio: "inherit",
-        });
-        this.prompt.spawn("npm", this.install.save(["express"]), {
-          stdio: "inherit",
-        });
-        // clean with presentation
-        if (copies.includes("ExpressApp.ts"))
-          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wpresentation.ts", "./src/main.ts");
-        // hexagonal adapter
-        if (copies.includes("ExpressAdapter.ts"))
-          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wadapter.ts", "./src/main.ts");
-        // single ddd
-        if (copies.includes("ExpressServer.ts"))
-          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wddd.ts", "./src/main.ts");
-        // mvc or clean without presentation
-        if (copies.includes("app.config.ts"))
-          this.fileManager.cpFromPackageToRepo("/defaults/examples/main.wclean.ts", "./src/main.ts");
+    const nodeVersion = this.prompt.spawn("node", ["--version"]);
+    this.logger.alert(`Installing ${framework} Node version: ${nodeVersion}`);
 
-        // e2e test
-        if (!this.fileManager.isFile("./tests/app-e2e.spec.ts")) {
-          this.fileManager.cpFromPackageToRepo("/defaults/examples/app-e2e.spec.ts", "tests/app-e2e.spec.ts", {
-            recursive: true,
-          });
-        }
+    switch (framework.toLowerCase()) {
+      case "express":
+        await this.express();
+        break;
+      case "typescript":
+        await this.typescript(nodeVersion);
+        break;
+      case "logger":
+        await this.loggerService();
+        break;
+      case "eslint":
+        await this.eslint();
+        break;
+      case "docker":
+        await this.docker();
         break;
       default:
         this.logger.error("Invalid framework:", framework);
@@ -187,13 +215,15 @@ export class Installers {
   }
 
   copyExampleFiles() {
+    const copies = [];
     if (this.fileManager.exists("src")) {
-      const copies = [];
       const path = this.fileManager.dirname + "/defaults/examples";
       const exampleFiles = this.fileManager.readdir(path, {
         recursive: true,
       });
+      console.log({ exampleFiles });
       for (const dir of this.fileManager.readdir("src", { recursive: true })) {
+        console.log({ dir });
         const filename = exampleFiles.find((e) => dir.endsWith(e));
         if (!filename) continue;
 
@@ -201,9 +231,8 @@ export class Installers {
         this.logger.info(`Copying example file: ${styled("white", "src/" + dir)}`);
         this.fileManager.cpFromPackageToRepo(`/defaults/examples/${filename}`, `src/${dir}`);
       }
-
-      return copies;
     }
+    return copies;
   }
 
   install = {
@@ -216,13 +245,19 @@ export class Installers {
      * @param {string[]} libs
      */
     save: (libs) => {
-      return ["install", "--save", ...libs]; // --save is default but it's good to be explicit here
+      const args = ["install", ...libs];
+      if (this.logger.isVerboseEnabled()) args.push("--verbose");
+      this.logger.info(`Installing dependencies: ${styled("white", libs.join())}`);
+      return args;
     },
     /**
      * @param {string[]} libs
      */
     dev: (libs) => {
-      return ["install", "--save-dev", ...libs];
+      const args = ["install", "-D", ...libs];
+      if (this.logger.isVerboseEnabled()) args.push("--verbose");
+      this.logger.info(`Installing dev dependencies: ${styled("white", libs.join())}`);
+      return args;
     },
   };
 }

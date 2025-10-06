@@ -69,6 +69,7 @@ export const settings = {
   compilerOptions: {
     target: "ES2024",
     outDir: "./dist",
+    module: "nodenext",
     esModuleInterop: true,
     strictNullChecks: true,
     baseUrl: ".",

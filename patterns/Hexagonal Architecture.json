@@ -3,7 +3,8 @@
         "adapters": {
             "persistence": "Repository implementations (Prisma, etc.)",
             "modules": "Module implementations (NestJS, etc.)",
-            "controllers": {
+            "controllers": "Controllers (HTTP, CLI, etc.)",
+            "http": {
                 "ExpressAdapter.ts": "HTTP controllers (ExpressAdapter, routes, etc.)"
             },
             "gateways": "External API gateways (Kafka, RabbitMQ, APIs, SendGrid, etc.)",

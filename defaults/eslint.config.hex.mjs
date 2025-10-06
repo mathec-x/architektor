@@ -48,8 +48,8 @@ export default defineConfig([
     },
     settings: {
       'boundaries/elements': [
-        { type: 'application', pattern: 'src/application/**' },
-        { type: 'core', pattern: 'src/core/**' }
+        { type: 'application', pattern: '*/application/**' },
+        { type: 'core', pattern: '*/core/**' }
       ]
     }
   }

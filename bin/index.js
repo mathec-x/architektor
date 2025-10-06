@@ -144,6 +144,16 @@ program
   });
 
 program
+  .version(version)
+  .command("add <framework>")
+  .description("Add a framework to the project")
+  .option("-v, --verbose", "Print more information")
+  .action(async (framework) => {
+    await installers.installFramework(framework);
+    exit(0);
+  });
+
+program
   .command("init")
   .argument("[type]", "", String, "typescript")
   .option("-y, --yes-to-all", "Answer yes to all questions")
