@@ -5,10 +5,12 @@ import { basename, dirname, join } from "path";
 import { cwd } from "process";
 import { FileJson } from "./fileJson.js";
 import { FileText } from "./fileText.js";
+import { Word } from "./word.js";
 
 export class FileManager {
   constructor() {
     this.logger = new Logger(FileManager.name);
+    this.words = new Word();
     this.filename = fileURLToPath(import.meta.url);
     this.dirname = dirname(join(this.filename, ".."));
     this.cwd = cwd();
@@ -48,10 +50,43 @@ export class FileManager {
 
   /**
    * @param {import("fs").PathLike} path
-   * @param {{ encoding?: BufferEncoding; withFileTypes?: false; recursive?: boolean }} options
+   * @param {{ encoding?: BufferEncoding; withFileTypes?: boolean | any; recursive?: boolean }} options
    */
   readdir(path, options = {}) {
     return readdirSync(path, { encoding: "utf8", ...options });
+  }
+
+  /**
+   * @param {import("fs").PathLike} path
+   * @param {string | ((name: string) => boolean)} [searchTerm]
+   * @param {'isDirectory' | 'isFile'} [dirent='isDirectory']
+   */
+  scandir(path, searchTerm, dirent = "isDirectory") {
+    let terms = undefined;
+    if (typeof searchTerm === "string") {
+      terms = [
+        this.words.plural(this.words.sanitize(searchTerm)),
+        this.words.singular(this.words.sanitize(searchTerm))
+      ];
+    }
+
+    return readdirSync(path, { recursive: true, encoding: "utf8", withFileTypes: true })
+      .filter((entry) => {
+        if (entry[dirent]()) {
+          if (!searchTerm) {
+            return true;
+          }
+
+          if (typeof searchTerm === "function") {
+            return searchTerm(entry.name);
+          }
+
+          const name = this.words.sanitize(entry.name);
+          return terms.some((dir) => name === dir);
+        }
+        return false;
+      })
+      .map((entry) => `${entry.parentPath}/${entry.name}`);
   }
 
   /**

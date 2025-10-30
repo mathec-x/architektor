@@ -1,4 +1,4 @@
-import { prompts, settings } from "./constants.js";
+import { settings } from "./constants.js";
 import { Logger, styled } from "./logger.js";
 
 export class Installers {
@@ -10,36 +10,6 @@ export class Installers {
     this.prompt = prompt;
     this.fileManager = fileManager;
     this.logger = new Logger(Installers.name);
-  }
-
-  async init() {
-    const nodeVersion = this.prompt.spawn("node", ["--version"]);
-    this.logger.alert(`Node version: ${nodeVersion}`);
-
-    if (!this.fileManager.isFile("package.json")) {
-      this.logger.info("Init Node project...");
-
-      console.log();
-      this.prompt.spawn("npm", this.install.init(), {
-        stdio: "inherit"
-      });
-    }
-
-    if (await this.prompt.confirm(prompts.tsInstall)) {
-      await this.prompt.delay(355);
-      await this.typescript(nodeVersion);
-    }
-    if (await this.prompt.confirm(prompts.eslintInstall)) {
-      await this.prompt.delay(355);
-      await this.eslint();
-    }
-    if (await this.prompt.confirm(prompts.defaultConfig)) {
-      await this.prompt.delay(355);
-      await this.defaultConfig();
-      await this.docker();
-    }
-
-    this.logger.info("Project initialized successfully!");
   }
 
   /**
@@ -82,7 +52,7 @@ export class Installers {
 
   async eslint() {
     this.logger.info("Creating eslint.config.mjs...");
-    this.prompt.spawn("npm", this.install.dev(settings.eslintLibs), {
+    this.prompt.spawn("npm", this.prompt.install.dev(settings.eslintLibs), {
       stdio: "inherit",
     });
 
@@ -110,7 +80,7 @@ export class Installers {
    */
   async typescript(nodeVersion) {
     const { compilerOptions, tsLibs } = settings;
-    this.prompt.spawn("npm", this.install.dev(tsLibs), {
+    this.prompt.spawn("npm", this.prompt.install.dev(tsLibs), {
       stdio: "inherit",
     });
 
@@ -142,10 +112,10 @@ export class Installers {
   }
 
   async express() {
-    this.prompt.spawn("npm", this.install.dev(["@types/express"]), {
+    this.prompt.spawn("npm", this.prompt.install.dev(["@types/express"]), {
       stdio: "inherit",
     });
-    this.prompt.spawn("npm", this.install.save(["express"]), {
+    this.prompt.spawn("npm", this.prompt.install.save(["express"]), {
       stdio: "inherit",
     });
     const copies = this.copyExampleFiles();
@@ -184,36 +154,6 @@ export class Installers {
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/docker-compose.yml", "docker-compose.yml");
   }
 
-  /**
-   *
-   * @param {string} framework
-   */
-  async installFramework(framework) {
-    const nodeVersion = this.prompt.spawn("node", ["--version"]);
-    this.logger.alert(`Installing ${framework} Node version: ${nodeVersion}`);
-
-    switch (framework.toLowerCase()) {
-      case "express":
-        await this.express();
-        break;
-      case "typescript":
-        await this.typescript(nodeVersion);
-        break;
-      case "logger":
-        await this.loggerService();
-        break;
-      case "eslint":
-        await this.eslint();
-        break;
-      case "docker":
-        await this.docker();
-        break;
-      default:
-        this.logger.error("Invalid framework:", framework);
-        break;
-    }
-  }
-
   copyExampleFiles() {
     const copies = [];
     if (this.fileManager.exists("src")) {
@@ -234,32 +174,6 @@ export class Installers {
     }
     return copies;
   }
-
-  install = {
-    init: () => {
-      const args = ["init", "-y"];
-      // if (this.prompt.yesToAll) args.push("-y");
-      return args;
-    },
-    /**
-     * @param {string[]} libs
-     */
-    save: (libs) => {
-      const args = ["install", ...libs];
-      if (this.logger.isVerboseEnabled()) args.push("--verbose");
-      this.logger.info(`Installing dependencies: ${styled("white", libs.join())}`);
-      return args;
-    },
-    /**
-     * @param {string[]} libs
-     */
-    dev: (libs) => {
-      const args = ["install", "-D", ...libs];
-      if (this.logger.isVerboseEnabled()) args.push("--verbose");
-      this.logger.info(`Installing dev dependencies: ${styled("white", libs.join())}`);
-      return args;
-    },
-  };
 }
 
 /**

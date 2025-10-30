@@ -28,6 +28,7 @@ Commands:
   generate [options]     Apply structure from file architecture.json
   print [options]        Print current structure file architecture.json
   init [options] [type]  Setup all dependencies for backend TypeScript project
+  add <module> <name>    Intelligently create files based on the current architecture pattern
   help [command]         display help for command
 ```
 
@@ -107,6 +108,14 @@ Once installed, you can use the alias:
 tsna <command>
 ```
 
+For example:
+```sh
+# Create components using the alias
+tsna add entity User
+tsna add service UserService
+tsna add controller UserController
+```
+
 ## Available Commands
 
 ### `init`
@@ -163,6 +172,23 @@ npx ts-node-app print
 
 - `-v, --verbose`: Prints more information during execution.
 
+### `add`
+
+Intelligently creates files based on the current architecture pattern defined in `architecture.json`. This command analyzes your project structure and generates the appropriate files (entities, services, controllers, repositories, etc.) following the established architectural pattern.
+
+```sh
+npx ts-node-app add <module> <name>
+```
+
+- `module`: The module type to create (e.g., `entity`, `service`, `controller`, `repository`, `use-case`)
+- `name`: The name of the component to create (e.g., `User`, `Product`, `Order`)
+
+The command automatically:
+- Detects the current architecture pattern from `architecture.json`
+- Creates files in the correct directories according to the pattern
+- Generates boilerplate code following best practices
+- Maintains consistency with the existing project structure
+
 ## Usage Examples
 
 ### Set Up TypeScript Project
@@ -193,6 +219,22 @@ npx ts-node-app generate
 
 ```sh
 npx ts-node-app print
+```
+
+### Create Intelligent Components
+
+```sh
+# Create a User entity
+npx ts-node-app add entity User
+
+# Create a Product service  
+npx ts-node-app add service Product
+
+# Create an Order controller
+npx ts-node-app add controller Order
+
+# Create a Payment use case
+npx ts-node-app add use-case Payment
 ```
 
 ## Complete Project Setup

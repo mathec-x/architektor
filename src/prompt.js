@@ -24,6 +24,16 @@ export class Prompt {
     return result.stdout || result.stderr ? (result.stdout + result.stderr).trim() : "";
   }
 
+  /**
+   * @param {string} entry
+   * @description summon VS Code with the given entry file or folder
+   */
+  code(entry) {
+    if (entry) {
+      this.spawn("code", [entry]);
+    }
+  }
+
   async delay(time) {
     return new Promise((resolve) => {
       setTimeout(resolve, time);
@@ -108,6 +118,32 @@ export class Prompt {
       });
     });
   }
+
+  install = {
+    init: () => {
+      const args = ["init", "-y"];
+      // if (this.yesToAll) args.push("-y");
+      return args;
+    },
+    /**
+     * @param {string[]} libs
+     */
+    save: (libs) => {
+      const args = ["install", ...libs];
+      if (this.logger.isVerboseEnabled()) args.push("--verbose");
+      this.logger.info(`Installing dependencies: ${styled("white", libs.join())}`);
+      return args;
+    },
+    /**
+     * @param {string[]} libs
+     */
+    dev: (libs) => {
+      const args = ["install", "-D", ...libs];
+      if (this.logger.isVerboseEnabled()) args.push("--verbose");
+      this.logger.info(`Installing dev dependencies: ${styled("white", libs.join())}`);
+      return args;
+    },
+  };
 
   /**
    * @param {string} input

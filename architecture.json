@@ -6,6 +6,7 @@
     "fileSystem.js": "File System Module for file operations",
     "fileManager.js": "File Manager Module for managing files",
     "fileJson.js": "File JSON Module for JSON file operations",
-    "constants.js": "Constants Module for storing constants"
+    "constants.js": "Constants Module for storing constants",
+    "executors.js": "Executor Module for executing commands"
   }
 }

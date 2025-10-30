@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import { prompts, settings } from "#core/constants";
+import { Executors } from "#core/executors";
+import { Word } from "#core/word";
 import { FileManager } from "#core/fileManager";
 import { FileSystem } from "#core/fileSystem";
 import { Installers } from "#core/installers";
@@ -14,8 +16,10 @@ const version = "0.0.1";
 
 const fileManager = new FileManager();
 const prompt = new Prompt();
+const words = new Word();
 const fileSystem = new FileSystem(fileManager);
 const installers = new Installers(fileManager, prompt);
+const executors = new Executors(fileManager, installers, prompt, words);
 const program = new Command(name);
 
 if (argv.includes("-v") || argv.includes("--verbose")) {
@@ -145,11 +149,13 @@ program
 
 program
   .version(version)
-  .command("add <framework>")
+  .command("add")
+  .argument("<framework>", "Framework to add to the project")
+  .argument("[filename]", "filename to create", String)
   .description("Add a framework to the project")
   .option("-v, --verbose", "Print more information")
-  .action(async (framework) => {
-    await installers.installFramework(framework);
+  .action(async (framework, filename) => {
+    await executors.add(framework, filename);
     exit(0);
   });
 
@@ -172,7 +178,7 @@ program
       exit(0);
     }
 
-    await installers.init();
+    await executors.init();
 
     const choice = await prompt.select(
       "Which architecture do you want to use? (you can cancel and run 'ts-node-app push' later)",
@@ -209,13 +215,11 @@ program
 
       const framework = await prompt.select("Do you want to apply one of these?", ["Express"], { cancelLabel: "No" });
       if (framework) {
-        await installers.installFramework(framework);
+        await executors.add(framework);
       }
 
       const entry = fileSystem.getStarterEntry(structure);
-      if (entry) {
-        prompt.spawn("code", [entry]);
-      }
+      prompt.code(entry);
 
       logger.alert("Run 'npm run dev' to start the project");
     }
