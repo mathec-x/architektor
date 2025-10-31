@@ -26,11 +26,12 @@ export class Prompt {
 
   /**
    * @param {string} entry
+   * @param {`${number}:${number}`} [line]
    * @description summon VS Code with the given entry file or folder
    */
-  code(entry) {
+  code(entry, line) {
     if (entry) {
-      this.spawn("code", [entry]);
+      this.spawn("code", ["--goto", entry + (line ? `:${line}` : "")]);
     }
   }
 

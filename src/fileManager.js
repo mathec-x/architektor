@@ -144,10 +144,15 @@ export class FileManager {
     }
   }
 
-  makeFileIfNotExists(path, value) {
+  /**
+   * 
+   * @param {string} path 
+   * @param  {...string} lines 
+   */
+  makeFileIfNotExists(path, ...lines) {
     if (!this.isFile(path)) {
       this.logger.info(`Add file ${path}`);
-      this.writeTextFile(path, value);
+      this.writeTextFile(path, lines.join("\n"));
     } else {
       this.logger.verbose(`File ${path} already exists`);
     }

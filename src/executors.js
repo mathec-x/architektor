@@ -112,7 +112,7 @@ export class Executors {
 		// Scan folders inside the currentFolder using ctxName as search term (e.g userService => service) 
 		const dirFolders = this.fileManager.scandir(currentFolder);
 		const hasTestFolder = dirFolders.some(f => f.toLowerCase().includes(`__${testNotation}`));
-		const createDir = (dirFolders.length > 0) ? `${currentFolder}/${fnName}` : currentFolder;
+		const createDir = "./" + (dirFolders.length > 0) ? `${currentFolder}/${fnName}` : currentFolder;
 
 		const fileNameFormatted = {
 			kebabCase: this.words.kebabCase(className, moduleName),
@@ -136,9 +136,18 @@ export class Executors {
 			exit(0);
 		}
 
-		this.fileManager.makeFileIfNotExists(willCreate.main);
-		this.fileManager.makeFileIfNotExists(willCreate.spec);
-		this.prompt.code(willCreate.main);
+		this.fileManager.makeDirIfNotExists(willCreate.dir);
+		this.fileManager.makeFileIfNotExists(willCreate.main,
+			`export class ${className} {`,
+			"\tconstructor () { }",
+			"\n\tasync execute() {",
+			"\t\t// TODO: Implement",
+			"\t",
+			"\t}",
+			"}"
+		);
+		this.fileManager.makeFileIfNotExists(willCreate.spec, "");
+		this.prompt.code(willCreate.main, "6:9");
 		this.logger.debug("Done");
 	}
 
@@ -211,7 +220,7 @@ export class Executors {
 
 		this.logger.debug("file notation current", acc);
 		return {
-			testNotation: (acc.testNotation.spec <= acc.testNotation.test) ? "test" : "spec",
+			testNotation: (acc.testNotation.spec < acc.testNotation.test) ? "test" : "spec",
 			fileNotation: acc.fileNotation.kebabCase >= acc.fileNotation.camelCase
 				? (acc.fileNotation.kebabCase >= acc.fileNotation.pascalCase ? "kebabCase" : "pascalCase")
 				: (acc.fileNotation.camelCase >= acc.fileNotation.pascalCase ? "camelCase" : "pascalCase")
