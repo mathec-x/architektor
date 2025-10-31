@@ -122,6 +122,7 @@ export class Executors {
 
 		const willCreate = {
 			dir: createDir,
+			testDir: hasTestFolder ? `${createDir}/__${testNotation}s__/` : null,
 			main: `${createDir}/${fileNameFormatted[fileNotation]}.ts`,
 			spec: `${createDir}/${hasTestFolder ? `__${testNotation}s__/` : ""}${fileNameFormatted[fileNotation]}.${testNotation}.ts`,
 		};
@@ -137,6 +138,9 @@ export class Executors {
 		}
 
 		this.fileManager.makeDirIfNotExists(willCreate.dir);
+		if (willCreate.testDir) {
+			this.fileManager.makeDirIfNotExists(willCreate.testDir);
+		}
 		this.fileManager.makeFileIfNotExists(willCreate.main,
 			`export class ${className} {`,
 			"\tconstructor () { }",
