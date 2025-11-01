@@ -117,6 +117,7 @@ export class Installers {
 
     const dir = this.fileManager.scandir("src");
     if (dir.contains("adapters")) {
+      await this.loggerService();
       const adapters = dir.getPath("adapters");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.md", `${adapters}/http/express/ExpressAdapter.md`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", `${adapters}/http/express/ExpressAdapter.ts`);
@@ -161,6 +162,7 @@ export class Installers {
     });
 
     if (dir.contains("adapters")) {
+      await this.express();
       this.fileManager.cpFromPackageToRepo(
         "/defaults/examples/swagger/zodValidationMiddleware.ts", "./src/infrastructure/http/middlewares/zodValidationMiddleware.ts"
       );

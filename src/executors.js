@@ -78,9 +78,7 @@ export class Executors {
 				await this.installers.express();
 				break;
 			case "zod-express-swagger-auto-adapters":
-				await this.installers.express();
 				await this.installers.zodSwaggerForExpress();
-				await this.installers.loggerService();
 				break;
 			case "typescript":
 				await this.installers.typescript(nodeVersion);

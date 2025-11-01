@@ -30,7 +30,7 @@ export const settings = {
   eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint", "eslint-plugin-boundaries"],
   stages: ["test", "development", "staging", "production"],
   scripts: {
-    dev: "dotenv -e .env.development tsx watch src/main.ts",
+    dev: "dotenv -v LOG_LEVEL=${npm_config_log:-info} -e .env.${npm_config_env:-development} tsx watch src/main.ts",
     start: "node dist/main.js",
     build: "tsup src/main.ts",
     test: "dotenv -e .env.test jest --coverage",
