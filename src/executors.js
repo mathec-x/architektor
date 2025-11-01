@@ -117,7 +117,7 @@ export class Executors {
 			: list.first();
 
 		if (!currentFolder) {
-			this.logger.warn("No structure found, aborting file creation.");
+			this.logger.warn(`No structure '${moduleName}' found, aborting file creation.`);
 			exit(0);
 		}
 
