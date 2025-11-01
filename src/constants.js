@@ -25,7 +25,6 @@ export const settings = {
     "tsup",
     "jest",
     "ts-jest",
-    "ts-node-app",
     "dotenv-cli",
   ],
   eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint", "eslint-plugin-boundaries"],

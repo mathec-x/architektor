@@ -158,7 +158,7 @@ program
 program
   .version(version)
   .command("add")
-  .argument("<framework>", "Framework to add to the project")
+  .argument("[framework]", "Framework to add to the project")
   .argument("[filename]", "filename to create", String)
   .description("Add a framework to the project")
   .option("-v, --verbose", "Print more information")

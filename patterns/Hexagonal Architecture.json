@@ -34,10 +34,11 @@
             "domain-events": "Domain events that represent something that has happened in the domain."
         },
         "infrastructure": {
-            "http": "HTTP framework configuration (Koa, Express, etc.)",
-            "database": "Database configuration (Prisma, etc.)",
+            "bootstrap": "Application bootstrap (server.ts, NestBootstrap, etc.)",
             "config": "General configuration (Logger, env, etc.)",
-            "bootstrap": "Application bootstrap (server.ts, NestBootstrap, etc.)"
+            "database": "Database configuration (Prisma, etc.)",
+            "http": "HTTP framework configuration (Koa, Express, etc.)",
+            "factories": "Factories to create instances of classes"
         },
         "main.ts": "Application entry point"
     },

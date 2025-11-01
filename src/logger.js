@@ -161,16 +161,22 @@ export class Logger {
 
   printUsageHints() {
     console.log(`
-      try: ${styled("yellow", "npx tsna add <module> [filename]")}
+
+      ${styled("italic", "You can now use the following command to add files to your architecture:")}
+      try ${styled("yellow", "npx tsna add <module> [filename]")}
 
       ${styled("gray", "For example:")}
       ${styled("yellow", "npx tsna add service user")} 
       ${styled("gray", "will create a file 'user.service.ts' inside the detected 'services' folder")}
-      
 
-      you can also use: ${styled("blue", "npx tsna add")} to add some framework to your project
-      
+      ${styled("gray", "More example:")}
+      ${styled("yellow", "npx tsna add useCase authenticationHandler")} 
+      ${styled("gray", "will create a file 'authentication-handler.use-case.ts' inside the detected 'use-case' folder")}
+      ${styled("italic", "Use this command to add controllers, repositories, adapters, in any project")}
 
+
+      you can also: 
+      use ${styled("blue", "npx tsna add")} to add some framework to your project
       edit ${styled("blue", "architecture.json")} to customize your structure 
       then run ${styled("blue", "npx tsna generate")} to create the folders
 

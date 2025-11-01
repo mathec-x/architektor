@@ -1,5 +1,5 @@
 import { settings } from "./constants.js";
-import { Logger, styled } from "./logger.js";
+import { Logger } from "./logger.js";
 
 export class Installers {
   /**
@@ -112,35 +112,59 @@ export class Installers {
   }
 
   async express() {
-    this.prompt.spawn("npm", this.prompt.install.dev(["@types/express"]), {
-      stdio: "inherit",
-    });
-    this.prompt.spawn("npm", this.prompt.install.save(["express"]), {
-      stdio: "inherit",
-    });
-    const copies = this.copyExampleFiles();
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", "./src/adapters/http/ExpressAdapter.ts");
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressRouteAdapter.ts", "./src/adapters/http/ExpressRouteAdapter.ts");
+    this.prompt.spawn("npm", this.prompt.install.dev(["@types/express"]), { stdio: "inherit" });
+    this.prompt.spawn("npm", this.prompt.install.save(["express"]), { stdio: "inherit" });
 
-    // clean with presentation
-    if (copies.includes("ExpressApp.ts"))
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wpresentation.ts", "./src/main.ts");
-    // hexagonal adapter
-    if (copies.includes("ExpressAdapter.ts"))
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wadapter.ts", "./src/main.ts");
-    // single ddd
-    if (copies.includes("ExpressServer.ts"))
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wddd.ts", "./src/main.ts");
-    // mvc or clean without presentation
-    if (copies.includes("app.config.ts"))
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wclean.ts", "./src/main.ts");
+    const dir = this.fileManager.scandir("src");
 
-    // e2e test
-    if (!this.fileManager.isFile("./tests/app-e2e.spec.ts")) {
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/app-e2e.spec.ts", "tests/app-e2e.spec.ts", {
-        recursive: true,
-      });
+    if (dir.contains("adapters")) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.md", "./src/adapters/http/express/ExpressAdapter.md");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", "./src/adapters/http/express/ExpressAdapter.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.spec.ts", "./src/adapters/http/express/ExpressAdapter.spec.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressRouteHandler.ts", "./src/adapters/http/express/ExpressRouteHandler.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressTestAdapter.ts", "./src/adapters/http/express/ExpressTestAdapter.ts");
+
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/NotFoundException.ts", "./src/core/exceptions/NotFoundException.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/HttpErrorHandler.ts", "./src/adapters/http/errors/HttpErrorHandler.ts");
+      this.fileManager.cpFromPackageToRepo(
+        "/defaults/examples/express/HttpErrorHandler.spec.ts", "./src/adapters/http/errors/HttpErrorHandler.spec.ts"
+      );
+
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/bootstrap-adapter.ts", "./src/infrastructure/bootstrap/app.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/app-e2e.spec.ts", "./tests/app-e2e.spec.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.adapter.ts", "./src/main.ts");
+
+      this.prompt.code("./src/infrastructure/bootstrap/app.ts");
+      this.prompt.code("./src/main.ts");
+      return;
     }
+    // // clean with presentation
+    // if (copies.includes("ExpressApp.ts"))
+    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wpresentation.ts", "./src/main.ts");
+    // // hexagonal adapter
+    // if (copies.includes("ExpressAdapter.ts"))
+    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wadapter.ts", "./src/main.ts");
+    // // single ddd
+    // if (copies.includes("ExpressServer.ts"))
+    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wddd.ts", "./src/main.ts");
+    // // mvc or clean without presentation
+    // if (copies.includes("app.config.ts"))
+    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wclean.ts", "./src/main.ts");
+  }
+
+  async zodSwaggerForExpress() {
+    this.prompt.spawn("npm", this.prompt.install.dev(["@types/swagger-ui-express"]), { stdio: "inherit" });
+    this.prompt.spawn("npm", this.prompt.install.save(["zod", "@asteasolutions/zod-to-openapi", "swagger-themes", "swagger-ui-express"]), {
+      stdio: "inherit"
+    });
+
+    this.fileManager.cpFromPackageToRepo(
+      "/defaults/examples/swagger/zodValidationMiddleware.ts", "./src/infrastructure/http/middlewares/zodValidationMiddleware.ts"
+    );
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/setupSwagger.ts", "./src/adapters/http/openapi/setupSwagger.ts");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.ts", "./src/adapters/http/openapi/OpenApiAdapter.ts");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.spec.ts", "./src/adapters/http/openapi/OpenApiAdapter.spec.ts");
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiTypes.ts", "./src/adapters/http/openapi/OpenApiTypes.ts");
   }
 
   async loggerService() {
@@ -152,27 +176,6 @@ export class Installers {
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/Dockerfile", "Dockerfile");
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/docker-compose.yml", "docker-compose.yml");
-  }
-
-  copyExampleFiles() {
-    const copies = [];
-    if (this.fileManager.exists("src")) {
-      const path = this.fileManager.dirname + "/defaults/examples";
-      const exampleFiles = this.fileManager.readdir(path, {
-        recursive: true,
-      });
-      console.log({ exampleFiles });
-      for (const dir of this.fileManager.readdir("src", { recursive: true })) {
-        console.log({ dir });
-        const filename = exampleFiles.find((e) => dir.endsWith(e));
-        if (!filename) continue;
-
-        copies.push(filename);
-        this.logger.info(`Copying example file: ${styled("white", "src/" + dir)}`);
-        this.fileManager.cpFromPackageToRepo(`/defaults/examples/${filename}`, `src/${dir}`);
-      }
-    }
-    return copies;
   }
 }
 

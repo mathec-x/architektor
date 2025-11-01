@@ -62,9 +62,25 @@ export class Executors {
 			return;
 		}
 
-		switch (framework.toLowerCase()) {
+		if (!framework) {
+			framework = await this.prompt.select("Select a framework to install:", [
+				"express",
+				"zod-express-swagger-auto",
+				"typescript",
+				"logger",
+				"eslint",
+				"docker"
+			]);
+		}
+
+		switch (framework?.toLowerCase()) {
 			case "express":
 				await this.installers.express();
+				break;
+			case "zod-express-swagger-auto":
+				await this.installers.express();
+				await this.installers.zodSwaggerForExpress();
+				await this.installers.loggerService();
 				break;
 			case "typescript":
 				await this.installers.typescript(nodeVersion);
@@ -108,6 +124,7 @@ export class Executors {
 		this.logger.info(`Selected directory: ${currentFolder}`);
 		const { fileNotation, testNotation } = this.getFileNotationFromDir(currentFolder);
 		const { fnName, className } = this.structFromArgs(filename, moduleName);
+		this.logger.verbose(`function Name: ${fnName}, Class Name: ${className}`);
 
 		// Scan folders inside the currentFolder using ctxName as search term (e.g userService => service) 
 		const curentDir = this.fileManager.scandir(currentFolder);
@@ -144,16 +161,27 @@ export class Executors {
 		if (willCreate.testDir) {
 			this.fileManager.makeDirIfNotExists(willCreate.testDir);
 		}
-		this.fileManager.makeFileIfNotExists(willCreate.main,
-			`export class ${className} {`,
-			"  constructor() {}\n",
-			"  async execute() {",
-			"    // TODO: Implement",
-			"    ",
-			"    return;",
-			"  }",
-			"}\n"
-		);
+
+		if (["factory", "factories"].includes(moduleName.toLowerCase())) {
+			const name = this.words.pascalCase(fnName);
+			this.fileManager.makeFileIfNotExists(willCreate.main,
+				`// create controller: npx tsna add controller ${fnName}`,
+				`export const make${className} = () => new ${name}Controller(`,
+				`// then create a useCase: npx tsna add useCase ${fnName}`,
+				`new ${name}UseCase()`,
+				");");
+		} else {
+			this.fileManager.makeFileIfNotExists(willCreate.main,
+				`export class ${className} {`,
+				"  constructor() {}\n",
+				"  async execute() {",
+				"    // TODO: Implement",
+				"    ",
+				"    return;",
+				"  }",
+				"}\n"
+			);
+		}
 		this.fileManager.makeFileIfNotExists(willCreate.spec, "");
 		this.prompt.code(willCreate.main, "6:5");
 		this.logger.debug("Done");
