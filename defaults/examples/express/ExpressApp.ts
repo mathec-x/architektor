@@ -1,11 +1,14 @@
 import express from 'express';
-import routes from '../routes';
+
+// import routes from '../routes';
 
 export class ExpressApp {
   public app = express();
 
   constructor() {
     this.app.use(express.json());
-    this.app.use(routes);
+    // add your first route running: npx tsna add route login
+
+    // this.app.use(routes);
   }
 }
