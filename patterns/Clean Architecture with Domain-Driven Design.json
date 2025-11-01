@@ -1,67 +1,42 @@
 {
     "src": {
         "application": {
-            "dto/": "Data Transfer Objects (input and output data)",
-            "services/": "Application services (orchestrating use cases)",
-            "use-cases/": "Use cases (Application Services)"
+            "dto": "Data Transfer Objects (input and output data)",
+            "services": "Application services (orchestrating use cases)",
+            "use-cases": "Use cases (Application Services)"
         },
         "domain": {
-            "aggregates/": "Aggregates (WithDraw, Order, etc.)",
-            "interfaces/": "Contracts (not implementations) of external services",
-            "entities/": "Domain entities (User, Product, etc.)",
-            "events/": "Domain Events",
-            "exceptions/": "Domain-related Exceptions",
-            "services/": "Domain services (business rules affecting multiple entities)",
-            "value-objects/": "Value objects (Email, CPF, etc.)"
+            "aggregates": "Aggregates (WithDraw, Order, etc.)",
+            "interfaces": "Contracts (not implementations) of external services",
+            "entities": "Domain entities (User, Product, etc.)",
+            "events": "Domain Events",
+            "exceptions": "Domain-related Exceptions",
+            "services": "Domain services (business rules affecting multiple entities)",
+            "value-objects": "Value objects (Email, CPF, etc.)"
         },
         "infrastructure": {
             "cache": "Cache implementation (Redis, etc.)",
-            "database": {
-                "prisma": {
-                    "client.ts": "PrismaClient instance",
-                    "migrations": {},
-                    "user.repository.ts": "UserRepository implementation"
-                }
-            },
-            "queue": {
-                "bull.config.ts": "Bull configuration for message queues",
-                "process-job.ts": "Job processing in queues"
-            },
+            "database": "Database Configuration",
+            "queue": "Queues Configuration",
             "repositories": "Repository implementations based on Domain contracts",
             "config": "Infrastructure configurations",
             "services": "External service implementations (Email, Cache, etc.)"
         },
         "presentation": {
             "ExpressApp.ts": "example express application setup",
-            "controllers": {
-                "user.controller.ts": "API Controllers"
-            },
-            "middlewares": {
-                "auth.middleware.ts": "Middleware functions",
-                "error-handler.middleware.ts": "Middleware functions"
-            },
-            "routes": {
-                "user.routes.ts": "API Route Configuration"
-            },
-            "graphql": {
-                "user.resolver.ts": "GraphQL resolvers"
-            },
-            "socket": {
-                "dashboard.gatewat.ts": "Socket.io event handlers"
-            },
-            "cli": {
-                "command.ts": "CLI commands"
-            }
+            "controllers": "API Controllers",
+            "middlewares": "Middleware functions",
+            "routes": "API Route Configuration",
+            "graphql": "GraphQL resolvers",
+            "socket": "Socket.io event handlers",
+            "cli": "CLI commands"
         },
         "shared": {
             "config": "Application configurations",
             "constants": "Application constants",
             "decorators": "Custom decorators",
             "dtos": "Shared Data Transfer Objects",
-            "errors": {
-                "app-error.ts": "Error handling and custom exceptions",
-                "not-found-error.ts": "Error handling and custom exceptions"
-            },
+            "errors": "Error handling and custom exceptions",
             "enums": "Shared enums",
             "exceptions": "Shared exceptions",
             "filters": "Global exception filters",

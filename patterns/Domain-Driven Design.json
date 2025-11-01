@@ -1,64 +1,33 @@
 {
-    "src/": {
-        "application/": {
-            "use-cases/": {
-                "create-user.use-case.ts": "Application use cases",
-                "update-user.use-case.ts": "Application use cases",
-                "delete-user.use-case.ts": "Application use cases"
-            },
-            "dto/": {
-                "user-dto.ts": "Data Transfer Objects, Not Domain Entities (input and output data)"
-            }
+    "src": {
+        "application": {
+            "use-cases": "Application use cases",
+            "dto": "Data Transfer Objects, Not Domain Entities (input and output data)"
         },
-        "domain/": {
-            "aggregates/": "Aggregates (WithDraw, Order, etc.)",
-            "contracts/": "Contracts (not implementations) of external services",
-            "entities/": "Domain entities (User, Product, etc.)",
-            "events/": "Domain Events",
-            "exceptions/": "Domain-related Exceptions",
-            "services/": "Domain services (business rules affecting multiple entities)",
-            "value-objects/": "Value objects (Email, CPF, etc.)"
+        "domain": {
+            "aggregates": "Aggregates (WithDraw, Order, etc.)",
+            "contracts": "Contracts (not implementations) of external services",
+            "entities": "Domain entities (User, Product, etc.)",
+            "events": "Domain Events",
+            "exceptions": "Domain-related Exceptions",
+            "services": "Domain services (business rules affecting multiple entities)",
+            "value-objects": "Value objects (Email, CPF, etc.)"
         },
-        "infrastructure/": {
-            "config/": {
+        "infrastructure": {
+            "config": {
                 "app-config.ts": "Technical Implementations (Database, External APIs)"
             },
-            "repositories/": {
-                "UserRepository.ts": "Concrete Repository Implementations"
-            },
-            "logger/": {
-                "logger.ts": "Logger Implementation"
-            },
-            "http/": {
-                "server.ts": "Presentation Layer Implementation (API, Web)",
-                "ExpressServer.ts": "Presentation Layer Implementation (API, Web)"
-            },
-            "services/": {
-                "auth.service.ts": "Technical Service Implementations",
-                "email.service.ts": "Technical Service Implementations"
-            },
-            "database/": {
-                "prisma/": {
-                    "client.ts": "Database Configuration",
-                    "user-repository.ts": "Database Configuration"
-                }
-            }
+            "repositories": "Concrete Repository Implementations",
+            "logger": "Logger Implementation",
+            "http": "Presentation Layer Implementation (API, Web)",
+            "services": "Technical Service Implementations",
+            "database": "Database Configuration"
         },
-        "shared/": {
-            "utils/": {
-                "date.util.ts": "Utility functions",
-                "string.util.ts": "Utility functions"
-            },
-            "constants/": {
-                "error-codes.ts": "Application constants"
-            },
-            "mappers/": {
-                "user.mapper.ts": "Data mappers"
-            },
-            "errors/": {
-                "app-error.ts": "Application errors",
-                "not-found-error.ts": "Application errors"
-            }
+        "shared": {
+            "utils": "Utility functions",
+            "constants": "Application constants",
+            "mappers": "Data mappers",
+            "errors": "Application errors"
         },
         "main.ts": "Application entry point"
     }
