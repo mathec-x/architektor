@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { Logger } from "./logger.js";
+import { Logger } from "../logger.js";
 
 export class FileText {
   #path;

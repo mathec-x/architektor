@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "fs";
-import { Logger } from "./logger.js";
+import { Logger } from "../logger.js";
 
 /**
  * @template T

@@ -96,9 +96,9 @@ export class Executors {
 		await this.prompt.delay(655);
 		const list = this.fileManager.scandir("src", moduleName);
 
-		const currentFolder = (list.length > 1)
-			? await this.prompt.select(`Found these directories matching '${moduleName}', select one to use:`, list)
-			: list[0];
+		const currentFolder = (list.size() > 1)
+			? await this.prompt.select(`Found these directories matching '${moduleName}', select one to use:`, list.all())
+			: list.first();
 
 		if (!currentFolder) {
 			this.logger.warn("No structure found, aborting file creation.");
@@ -110,8 +110,12 @@ export class Executors {
 		const { fnName, className } = this.structFromArgs(filename, moduleName);
 
 		// Scan folders inside the currentFolder using ctxName as search term (e.g userService => service) 
-		const dirFolders = this.fileManager.scandir(currentFolder);
-		const createDir = "./" + (dirFolders.length > 0) ? `${currentFolder}/${fnName}` : currentFolder;
+		const curentDir = this.fileManager.scandir(currentFolder);
+		const hasTestFolder = curentDir.contains("__test");
+		const lengthWithoutPrivate = curentDir.sizeWithout("/_");
+		this.logger.debug("Scan Settings", { lengthWithoutPrivate, hasTestFolder, curentDir: curentDir.all() });
+
+		const createDir = "./" + (lengthWithoutPrivate > 0 ? `${currentFolder}/${fnName}` : currentFolder);
 
 		const fileNameFormatted = {
 			kebabCase: this.words.kebabCase(className, moduleName),
@@ -119,7 +123,6 @@ export class Executors {
 			pascalCase: this.words.pascalCase(className)
 		};
 
-		const hasTestFolder = dirFolders.some(f => f.toLowerCase().includes("__test"));
 		const willCreate = {
 			dir: createDir,
 			testDir: hasTestFolder ? `${createDir}/__tests__/` : null,
@@ -143,15 +146,16 @@ export class Executors {
 		}
 		this.fileManager.makeFileIfNotExists(willCreate.main,
 			`export class ${className} {`,
-			"\tconstructor () { }",
-			"\n\tasync execute() {",
-			"\t\t// TODO: Implement",
-			"\t",
-			"\t}",
-			"}"
+			"  constructor() {}\n",
+			"  async execute() {",
+			"    // TODO: Implement",
+			"    ",
+			"    return;",
+			"  }",
+			"}\n"
 		);
 		this.fileManager.makeFileIfNotExists(willCreate.spec, "");
-		this.prompt.code(willCreate.main, "6:9");
+		this.prompt.code(willCreate.main, "6:5");
 		this.logger.debug("Done");
 	}
 
@@ -190,39 +194,9 @@ export class Executors {
 	 * }}
 	*/
 	getFileNotationFromDir(path) {
-		const dirFiles = this.fileManager.scandir(path, null, "isFile");
-		const acc = {
-			testNotation: {
-				spec: 0,
-				test: 0
-			},
-			fileNotation: {
-				camelCase: 0,
-				pascalCase: 0,
-				kebabCase: 0
-			}
-		};
-		dirFiles.forEach((cur) => {
-			const baseName = cur.slice(cur.lastIndexOf("/") + 1, cur.lastIndexOf("."));
-			const [actionName, moduleName] = baseName.split(".");
-
-			if (moduleName && moduleName.indexOf("spec") !== -1) {
-				acc.testNotation.spec++;
-			} else if (moduleName && moduleName.indexOf("test") !== -1) {
-				acc.testNotation.test++;
-			} else if (this.words.isKebabCase(actionName || moduleName)) {
-				acc.fileNotation.kebabCase++;
-			} else if (this.words.isCamelCase(actionName || moduleName)) {
-				acc.fileNotation.camelCase++;
-			} else if (this.words.isPascalCase(actionName || moduleName)) {
-				acc.fileNotation.pascalCase++;
-			}
-
-			this.logger.verbose(`Analising file name: ${baseName}`);
-			return acc;
-		}, { testNotation: undefined, fileNotation: undefined });
-
-		this.logger.debug("file notation current", acc);
+		const acc = this.fileManager.scandir(path, null, "isFile").analizeFileNotation();
+		this.logger.debug("Notation by tests", acc.testNotation);
+		this.logger.debug("Notation by title", acc.fileNotation);
 		return {
 			testNotation: (acc.testNotation.spec < acc.testNotation.test) ? "test" : "spec",
 			fileNotation: acc.fileNotation.kebabCase >= acc.fileNotation.camelCase

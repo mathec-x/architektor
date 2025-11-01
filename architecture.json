@@ -1,5 +1,6 @@
 {
   "src": {
+    "value-objects": "Value Objects Module",
     "prompt.js": "Readline Prompt Module for CLI Interface",
     "logger.js": "Logger Module for better logging",
     "installers.js": "Installers Module for installing dependencies",
