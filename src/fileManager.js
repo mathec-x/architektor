@@ -77,11 +77,11 @@ export class FileManager {
     source = join(this.dirname, source);
     destination = join(this.cwd, destination);
     if (this.exists(destination) && !forceOverride) {
-      this.logger.verbose(`Destination ${basename(destination)} already exists, skipping copy.`);
+      this.logger.warn(styled("gray", `Destination ${basename(destination)} already exists, skipping copy.`));
       return;
     }
 
-    this.logger.verbose(styled("blue", `Copying ${basename(source)} to '${destination}'`));
+    this.logger.info(styled("blue", `Copying ${basename(source)} to '${destination}'`));
     return cpSync(source, destination, options);
   }
 
