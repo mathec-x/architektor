@@ -135,8 +135,11 @@ export class Installers {
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.adapter.ts", "./src/main.ts");
 
       this.prompt.code("./src/infrastructure/bootstrap/app.ts");
-      this.prompt.code("./src/main.ts");
-      return;
+    } else if (dir.contains("presentation")) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressApp.ts", "./src/presentation/http/ExpressApp.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.presentation.ts", "./src/main.ts");
+
+      this.prompt.code("./src/presentation/http/ExpressApp.ts");
     }
     // // clean with presentation
     // if (copies.includes("ExpressApp.ts"))
@@ -150,26 +153,34 @@ export class Installers {
     // // mvc or clean without presentation
     // if (copies.includes("app.config.ts"))
     //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wclean.ts", "./src/main.ts");
+    this.prompt.code("./src/main.ts");
   }
 
   async zodSwaggerForExpress() {
+    const dir = this.fileManager.scandir("src");
     this.prompt.spawn("npm", this.prompt.install.dev(["@types/swagger-ui-express"]), { stdio: "inherit" });
     this.prompt.spawn("npm", this.prompt.install.save(["zod", "@asteasolutions/zod-to-openapi", "swagger-themes", "swagger-ui-express"]), {
       stdio: "inherit"
     });
 
-    this.fileManager.cpFromPackageToRepo(
-      "/defaults/examples/swagger/zodValidationMiddleware.ts", "./src/infrastructure/http/middlewares/zodValidationMiddleware.ts"
-    );
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/setupSwagger.ts", "./src/adapters/http/openapi/setupSwagger.ts");
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.ts", "./src/adapters/http/openapi/OpenApiAdapter.ts");
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.spec.ts", "./src/adapters/http/openapi/OpenApiAdapter.spec.ts");
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiTypes.ts", "./src/adapters/http/openapi/OpenApiTypes.ts");
+    if (dir.contains("adapters")) {
+      this.fileManager.cpFromPackageToRepo(
+        "/defaults/examples/swagger/zodValidationMiddleware.ts", "./src/infrastructure/http/middlewares/zodValidationMiddleware.ts"
+      );
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/setupSwagger.ts", "./src/adapters/http/openapi/setupSwagger.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.ts", "./src/adapters/http/openapi/OpenApiAdapter.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.spec.ts", "./src/adapters/http/openapi/OpenApiAdapter.spec.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiTypes.ts", "./src/adapters/http/openapi/OpenApiTypes.ts");
+    }
   }
 
   async loggerService() {
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerAdapter.ts", "./src/adapters/logger/LoggerAdapter.ts");
-    this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerService.ts", "./src/application/services/logger/LoggerService.ts");
+    const dir = this.fileManager.scandir("src");
+
+    if (dir.contains("adapters")) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerAdapter.ts", "./src/adapters/logger/LoggerAdapter.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerService.ts", "./src/application/services/logger/LoggerService.ts");
+    }
   }
 
   async docker() {

@@ -23,13 +23,13 @@
             "services": "External service implementations (Email, Cache, etc.)"
         },
         "presentation": {
-            "ExpressApp.ts": "example express application setup",
+            "cli": "CLI commands",
             "controllers": "API Controllers",
-            "middlewares": "Middleware functions",
-            "routes": "API Route Configuration",
             "graphql": "GraphQL resolvers",
-            "socket": "Socket.io event handlers",
-            "cli": "CLI commands"
+            "middlewares": "Middleware functions",
+            "http": "example express application setup",
+            "routes": "API Route Configuration",
+            "socket": "Socket.io event handlers"
         },
         "shared": {
             "config": "Application configurations",

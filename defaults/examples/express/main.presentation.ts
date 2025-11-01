@@ -1,6 +1,6 @@
-import { ExpressServer } from '@/infrastructure/http/ExpressServer';
+import { ExpressApp } from "@/presentation/http/ExpressApp";
 
-const server = new ExpressServer();
+const server = new ExpressApp();
 const PORT = process.env.PORT || 3000;
 
 server.app.listen(PORT, () => {
