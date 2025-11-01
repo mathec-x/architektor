@@ -111,7 +111,6 @@ export class Executors {
 
 		// Scan folders inside the currentFolder using ctxName as search term (e.g userService => service) 
 		const dirFolders = this.fileManager.scandir(currentFolder);
-		const hasTestFolder = dirFolders.some(f => f.toLowerCase().includes(`__${testNotation}`));
 		const createDir = "./" + (dirFolders.length > 0) ? `${currentFolder}/${fnName}` : currentFolder;
 
 		const fileNameFormatted = {
@@ -120,11 +119,12 @@ export class Executors {
 			pascalCase: this.words.pascalCase(className)
 		};
 
+		const hasTestFolder = dirFolders.some(f => f.toLowerCase().includes("__test"));
 		const willCreate = {
 			dir: createDir,
-			testDir: hasTestFolder ? `${createDir}/__${testNotation}s__/` : null,
+			testDir: hasTestFolder ? `${createDir}/__tests__/` : null,
 			main: `${createDir}/${fileNameFormatted[fileNotation]}.ts`,
-			spec: `${createDir}/${hasTestFolder ? `__${testNotation}s__/` : ""}${fileNameFormatted[fileNotation]}.${testNotation}.ts`,
+			spec: `${createDir}/${hasTestFolder ? "__tests__/" : ""}${fileNameFormatted[fileNotation]}.${testNotation}.ts`,
 		};
 
 		await this.prompt.delay(555);
