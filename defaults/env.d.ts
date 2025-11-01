@@ -9,7 +9,7 @@ declare namespace NodeJS {
         DATABASE_NAME: string;
         JWT_SECRET: string;
         AWS_BUCKET_NAME: string;
-        TZ: string;
+        TZ?: string;
         // Add other environment variables as needed
     }
 }
