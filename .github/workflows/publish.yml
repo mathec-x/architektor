@@ -1,0 +1,55 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check if version changed
+        id: version_check
+        run: |
+          git fetch origin main --depth=2
+          OLD_VERSION=$(git show HEAD~1:package.json | jq -r .version)
+          NEW_VERSION=$(jq -r .version package.json)
+          echo "Old: $OLD_VERSION, New: $NEW_VERSION"
+          if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish ts-node-app
+        if: steps.version_check.outputs.version_changed == 'true'
+        run: |
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish tsna (temporary rename)
+        if: steps.version_check.outputs.version_changed == 'true'
+        run: |
+          ORIGINAL_NAME=$(jq -r .name package.json)
+          jq '.name = "tsna"' package.json > package.tmp.json
+          mv package.tmp.json package.json
+          npm publish
+          jq --arg name "$ORIGINAL_NAME" '.name = $name' package.json > package.tmp.json
+          mv package.tmp.json package.json
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
