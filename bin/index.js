@@ -96,6 +96,13 @@ program
 
     logger.alert(`Copy new struct: '${type}' to the file architecture.json, run 'ts-node-app generate' to apply it`);
     fileSystem.copyStructure(structure);
+
+    if (await prompt.confirm(prompts.generate)) {
+      logger.alert("Generating structure folders to the repository...");
+      fileSystem.generateStructure(structure);
+      logger.printUsageHints();
+    }
+
     logger.logGroupEnd();
     exit(0);
   });
@@ -121,6 +128,7 @@ program
     if (await prompt.confirm(prompts.generate)) {
       logger.alert("Generating structure folders to the repository...");
       fileSystem.generateStructure(structure);
+      logger.printUsageHints();
     }
 
     logger.logGroupEnd();
