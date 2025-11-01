@@ -38,6 +38,10 @@ export class FileText {
   save() {
     return writeFileSync(this.#path, this.content);
   }
+
+  lines() {
+    return this.content.split(/\r?\n/).length;
+  }
 }
 
 /**

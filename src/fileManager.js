@@ -76,7 +76,8 @@ export class FileManager {
   cpFromPackageToRepo(source, destination, options = {}, forceOverride = false) {
     source = join(this.dirname, source);
     destination = join(this.cwd, destination);
-    if (this.exists(destination) && !forceOverride) {
+
+    if (this.exists(destination) && this.countLines(destination) > 3 && !forceOverride) {
       this.logger.warn(styled("gray", `Destination ${basename(destination)} already exists, skipping copy.`));
       return;
     }
@@ -90,6 +91,16 @@ export class FileManager {
    */
   exists(path) {
     return existsSync(path);
+  }
+
+  /**
+ * @param {import("fs").PathLike} path
+ */
+  countLines(path) {
+    const lines = this.readTextFile(path).lines();
+    const pathStr = path.toString().substring(path.toString().indexOf("src"));
+    this.logger.debug(`File ${pathStr} has ${lines} lines`);
+    return lines;
   }
 
   /**
@@ -129,11 +140,11 @@ export class FileManager {
    * @param  {...string} lines 
    */
   makeFileIfNotExists(path, ...lines) {
-    if (!this.isFile(path)) {
+    if (this.isFile(path) && this.countLines(path) > 3) {
+      this.logger.warn(`File ${path} already exists and has content`);
+    } else {
       this.logger.info(`Add file ${path}`);
       this.writeTextFile(path, lines.join("\n"));
-    } else {
-      this.logger.verbose(`File ${path} already exists`);
     }
   }
 
