@@ -1,8 +1,12 @@
 import { LoggerService } from '@/application/services/logger/LoggerService';
 import { NotFoundException } from '@/core/exceptions/NotFoundException';
 import { Request, Response } from 'express';
-// import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-// import z from 'zod';
+
+// run: npx tsna add prisma
+// import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'; 
+
+// run: npx tsna add zod
+// import z from 'zod'; // npx tsna add zod
 
 export class HttpErrorHandler {
 

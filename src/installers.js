@@ -116,50 +116,47 @@ export class Installers {
     this.prompt.spawn("npm", this.prompt.install.save(["express"]), { stdio: "inherit" });
 
     const dir = this.fileManager.scandir("src");
-
     if (dir.contains("adapters")) {
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.md", "./src/adapters/http/express/ExpressAdapter.md");
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", "./src/adapters/http/express/ExpressAdapter.ts");
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.spec.ts", "./src/adapters/http/express/ExpressAdapter.spec.ts");
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressRouteHandler.ts", "./src/adapters/http/express/ExpressRouteHandler.ts");
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressTestAdapter.ts", "./src/adapters/http/express/ExpressTestAdapter.ts");
-
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/NotFoundException.ts", "./src/core/exceptions/NotFoundException.ts");
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/HttpErrorHandler.ts", "./src/adapters/http/errors/HttpErrorHandler.ts");
-      this.fileManager.cpFromPackageToRepo(
-        "/defaults/examples/express/HttpErrorHandler.spec.ts", "./src/adapters/http/errors/HttpErrorHandler.spec.ts"
-      );
+      const adapters = dir.getPath("adapters");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.md", `${adapters}/http/express/ExpressAdapter.md`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", `${adapters}/http/express/ExpressAdapter.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.spec.ts", `${adapters}/http/express/ExpressAdapter.spec.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressRouteHandler.ts", `${adapters}/http/express/ExpressRouteHandler.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressTestAdapter.ts", `${adapters}/http/express/ExpressTestAdapter.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/HttpErrorHandler.ts", `${adapters}/http/errors/HttpErrorHandler.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/HttpErrorHandler.spec.ts", `${adapters}/http/errors/HttpErrorHandler.spec.ts`);
 
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/bootstrap-adapter.ts", "./src/infrastructure/bootstrap/app.ts");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/app-e2e.spec.ts", "./tests/app-e2e.spec.ts");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.adapter.ts", "./src/main.ts");
 
+      if (dir.contains("core")) {
+        this.fileManager.cpFromPackageToRepo("/defaults/examples/express/NotFoundException.ts", "./src/core/exceptions/NotFoundException.ts");
+      }
+
       this.prompt.code("./src/infrastructure/bootstrap/app.ts");
     } else if (dir.contains("presentation")) {
-      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressApp.ts", "./src/presentation/http/ExpressApp.ts");
+      const presentation = dir.getPath("presentation");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressApp.ts", `${presentation}/http/ExpressApp.ts`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.presentation.ts", "./src/main.ts");
 
       this.prompt.code("./src/presentation/http/ExpressApp.ts");
+    } else if (dir.contains("config")) {
+      const config = dir.getPath("config");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/app-config.ts", `${config}/app-config.ts`);
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.config.ts", "./src/main.ts");
+
+      this.prompt.code("./src/infrastructure/config/app-config.ts");
     }
-    // // clean with presentation
-    // if (copies.includes("ExpressApp.ts"))
-    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wpresentation.ts", "./src/main.ts");
-    // // hexagonal adapter
-    // if (copies.includes("ExpressAdapter.ts"))
-    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wadapter.ts", "./src/main.ts");
-    // // single ddd
-    // if (copies.includes("ExpressServer.ts"))
-    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wddd.ts", "./src/main.ts");
-    // // mvc or clean without presentation
-    // if (copies.includes("app.config.ts"))
-    //   this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.wclean.ts", "./src/main.ts");
+
     this.prompt.code("./src/main.ts");
   }
 
   async zodSwaggerForExpress() {
     const dir = this.fileManager.scandir("src");
+    await this.zod();
     this.prompt.spawn("npm", this.prompt.install.dev(["@types/swagger-ui-express"]), { stdio: "inherit" });
-    this.prompt.spawn("npm", this.prompt.install.save(["zod", "@asteasolutions/zod-to-openapi", "swagger-themes", "swagger-ui-express"]), {
+    this.prompt.spawn("npm", this.prompt.install.save(["@asteasolutions/zod-to-openapi", "swagger-themes", "swagger-ui-express"]), {
       stdio: "inherit"
     });
 
@@ -172,6 +169,12 @@ export class Installers {
       this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiAdapter.spec.ts", "./src/adapters/http/openapi/OpenApiAdapter.spec.ts");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/swagger/OpenApiTypes.ts", "./src/adapters/http/openapi/OpenApiTypes.ts");
     }
+  }
+
+  async zod() {
+    this.prompt.spawn("npm", this.prompt.install.save(["zod"]), {
+      stdio: "inherit"
+    });
   }
 
   async loggerService() {

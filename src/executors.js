@@ -65,7 +65,7 @@ export class Executors {
 		if (!framework) {
 			framework = await this.prompt.select("Select a framework to install:", [
 				"express",
-				"zod-express-swagger-auto",
+				"zod-express-swagger-auto-adapters",
 				"typescript",
 				"logger",
 				"eslint",
@@ -77,7 +77,7 @@ export class Executors {
 			case "express":
 				await this.installers.express();
 				break;
-			case "zod-express-swagger-auto":
+			case "zod-express-swagger-auto-adapters":
 				await this.installers.express();
 				await this.installers.zodSwaggerForExpress();
 				await this.installers.loggerService();
@@ -93,6 +93,9 @@ export class Executors {
 				break;
 			case "docker":
 				await this.installers.docker();
+				break;
+			case "zod":
+				await this.installers.zod();
 				break;
 			default:
 				this.logger.error("Invalid framework:", framework);

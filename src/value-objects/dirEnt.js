@@ -64,6 +64,12 @@ export class DirEnt {
 		return this.#values.some(f => f.toLowerCase().includes(str));
 	}
 
+	/** @param {string} str */
+	getPath(str) {
+		return this.#values.find(f => f.toLowerCase().includes(str));
+	}
+
+
 	size() {
 		return this.#values.length;
 	}
