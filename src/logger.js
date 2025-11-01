@@ -39,9 +39,9 @@ function debug(level, object) {
 const parsePascalCase = (label) => {
   return label
     ? label
-        .replace(/[_\-\s]+/g, " ")
-        .replace(/(^\w|\b\w)/g, (match) => match.toUpperCase())
-        .replace(/\s+/g, "")
+      .replace(/[_\-\s]+/g, " ")
+      .replace(/(^\w|\b\w)/g, (match) => match.toUpperCase())
+      .replace(/\s+/g, "")
     : undefined;
 };
 
@@ -157,5 +157,24 @@ export class Logger {
 
   isAlertEnabled() {
     return this.levels.indexOf(this.level) <= this.levels.indexOf("ALERT");
+  }
+
+  printUsageHints() {
+    console.log(`
+      try: ${styled("yellow", "npx tsna add <module> [filename]")}
+
+      ${styled("gray", "For example:")}
+      ${styled("yellow", "npx tsna add service user")} 
+      ${styled("gray", "will create a file 'user.service.ts' inside the detected 'services' folder")}
+      
+
+      you can also use: ${styled("blue", "npx tsna add")} to add some framework to your project
+      
+
+      edit ${styled("blue", "architecture.json")} to customize your structure 
+      then run ${styled("blue", "npx tsna generate")} to create the folders
+
+      ${styled("italic", "Happy coding! 🚀")}
+    `);
   }
 }
