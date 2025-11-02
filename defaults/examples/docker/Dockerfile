@@ -1,5 +1,5 @@
 # Use the official Node.js image from the Docker Hub
-FROM node:22-alpine AS base
+FROM node:22.21.0-alpine AS base
 # Create and change to the app directory
 WORKDIR /app
 # Copy package.json and package-lock.json
