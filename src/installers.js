@@ -116,9 +116,14 @@ export class Installers {
     this.prompt.spawn("npm", this.prompt.install.save(["express"]), { stdio: "inherit" });
 
     const dir = this.fileManager.scandir("src");
+    const { name: type, path } = dir.getFirstPath("core", "domain");
+    if (type) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/express/NotFoundException.ts", `${path}/exceptions/NotFoundException.ts`);
+    }
+
     if (dir.contains("adapters")) {
       await this.loggerService();
-      const adapters = dir.getPath("adapters");
+      const { path: adapters } = dir.getFirstPath("adapters");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.md", `${adapters}/http/express/ExpressAdapter.md`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.ts", `${adapters}/http/express/ExpressAdapter.ts`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressAdapter.spec.ts", `${adapters}/http/express/ExpressAdapter.spec.ts`);
@@ -131,19 +136,15 @@ export class Installers {
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/app-e2e.spec.ts", "./tests/app-e2e.spec.ts");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.adapter.ts", "./src/main.ts");
 
-      if (dir.contains("core")) {
-        this.fileManager.cpFromPackageToRepo("/defaults/examples/express/NotFoundException.ts", "./src/core/exceptions/NotFoundException.ts");
-      }
-
       this.prompt.code("./src/infrastructure/bootstrap/app.ts");
     } else if (dir.contains("presentation")) {
-      const presentation = dir.getPath("presentation");
+      const { path: presentation } = dir.getFirstPath("presentation");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/ExpressApp.ts", `${presentation}/http/ExpressApp.ts`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.presentation.ts", "./src/main.ts");
 
       this.prompt.code("./src/presentation/http/ExpressApp.ts");
     } else if (dir.contains("config")) {
-      const config = dir.getPath("config");
+      const { path: config } = dir.getFirstPath("config");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/app-config.ts", `${config}/app-config.ts`);
       this.fileManager.cpFromPackageToRepo("/defaults/examples/express/main.config.ts", "./src/main.ts");
 
@@ -185,6 +186,9 @@ export class Installers {
     if (dir.contains("adapters")) {
       this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerAdapter.ts", "./src/adapters/logger/LoggerAdapter.ts");
       this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerService.ts", "./src/application/services/logger/LoggerService.ts");
+    } else if (dir.contains("infrastructure")) {
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerAdapter.ts", "./src/infrastructure/logger/LoggerAdapter.ts");
+      this.fileManager.cpFromPackageToRepo("/defaults/examples/logger/LoggerService.ts", "./src/infrastructure/logger/LoggerService.ts");
     }
   }
 
