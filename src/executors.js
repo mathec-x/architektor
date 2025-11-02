@@ -69,7 +69,8 @@ export class Executors {
 				"typescript",
 				"logger",
 				"eslint",
-				"docker"
+				"docker",
+				"prisma"
 			]);
 		}
 
@@ -94,6 +95,9 @@ export class Executors {
 				break;
 			case "zod":
 				await this.installers.zod();
+				break;
+			case "prisma":
+				await this.installers.prisma();
 				break;
 			default:
 				this.logger.error("Invalid framework:", framework);

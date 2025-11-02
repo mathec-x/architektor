@@ -1,5 +1,5 @@
 import { settings } from "./constants.js";
-import { Logger } from "./logger.js";
+import { Logger, styled } from "./logger.js";
 
 export class Installers {
   /**
@@ -196,6 +196,64 @@ export class Installers {
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/.dockerignore", ".dockerignore");
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/Dockerfile", "Dockerfile");
     this.fileManager.cpFromPackageToRepo("/defaults/examples/docker/docker-compose.yml", "docker-compose.yml");
+  }
+
+  async prisma() {
+    this.prompt.spawn("npm", this.prompt.install.dev(["prisma", "@types/node"]), { stdio: "inherit" });
+    this.prompt.spawn("npm", this.prompt.install.save(["@prisma/client"]), { stdio: "inherit" });
+
+    const dir = this.fileManager.scandir("src");
+    const { path, name } = dir.getFirstPath("database");
+
+    if (!name) {
+      this.logger.error("No 'database' folder not found in src/. Prisma initialization aborted.");
+      return;
+    }
+
+    const initArgs = [
+      "prisma", "init",
+      "--datasource-provider", "postgresql",
+    ];
+
+    const outputPath = await this.prompt.select("Change output path for prisma generated", [
+      `${path}/prisma/generated`,
+    ], { cancelLabel: "(root)" });
+
+    if (outputPath) {
+      initArgs.push("--output", "../" + outputPath);
+    }
+
+    this.prompt.spawn("npx", initArgs, { stdio: "inherit" });
+
+    const env = this.fileManager.readTextFile(".env");
+    const dbUrlLine = env.getLine("DATABASE_URL");
+    this.fileManager.readTextFile(".env.development").appendLine(dbUrlLine);
+    this.fileManager.readTextFile(".env.staging").appendLine(dbUrlLine);
+    this.fileManager.readTextFile(".env.production").appendLine(dbUrlLine);
+    env.rm();
+
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/prisma/client.ts", `${path}/prisma/client.ts`);
+    this.fileManager.cpFromPackageToRepo("/defaults/examples/prisma/mock.ts", `${path}/prisma/mock.ts`);
+
+    const pkg = this.fileManager.readJsonFile("package.json", { scripts: {} });
+    pkg.set("scripts", {
+      ...pkg.data.scripts,
+      ...{
+        "db:generate": "dotenv -e .env.${npm_config_env:-development} -- prisma generate",
+        "db:push": "dotenv -e .env.${npm_config_env:-development} -- prisma db push && npm run db:generate",
+        "db:studio": "dotenv -e .env.${npm_config_env:-development} -- prisma studio",
+      },
+    });
+    pkg.save();
+    console.log(`
+      Run ${styled("yellow", "npm run db:generate")} to generate Prisma Client.
+      Run ${styled("yellow", "npm run db:studio")} to open Prisma Studio.
+      Run ${styled("yellow", "npm run db:push")} to push database schema changes.
+    `);
+
+    this.prompt.code(`${path}/prisma/client.ts`);
+    this.prompt.code("prisma/schema.prisma");
+    this.logger.info("Prisma installed successfully!");
   }
 }
 

@@ -232,7 +232,7 @@ program
       logger.alert("Run 'npm run dev' to start the project");
     }
 
-    logger.alert("Finished");
+    logger.printUsageHints();
     logger.logGroupEnd();
     exit(0);
   });

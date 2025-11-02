@@ -64,7 +64,7 @@ export const settings = {
     "explorer.fileNesting.patterns": {
       "Dockerfile": "Docker*, docker*, .docker*",
       ".env.development": ".env*",
-      "tsconfig.json": "tsconfig*, jest*, eslint*, .eslint*, prettier*, .prettier*",
+      "tsconfig.json": "tsconfig*, jest*, eslint*, .eslint*, prettier*, .prettier*, *.config.ts",
       "package.json": ".nvmrc, package*, yarn*, pnpm*, bun*, .git*, jsconfig*, config*",
     },
   },
