@@ -30,19 +30,19 @@ export const settings = {
   eslintLibs: ["eslint", "globals", "@eslint/js", "typescript-eslint", "eslint-plugin-boundaries"],
   stages: ["test", "development", "staging", "production"],
   scripts: {
-    dev: "dotenv -v LOG_LEVEL=${npm_config_log:-info} -e .env.${npm_config_env:-development} tsx watch src/main.ts",
-    start: "node dist/main.js",
-    build: "tsup src/main.ts",
     test: "dotenv -e .env.test jest --coverage",
     "test:watch": "dotenv -e .env.test jest -- --watchAll --no-coverage",
+    dev: "dotenv -v LOG_LEVEL=${npm_config_log:-info} -e .env.${npm_config_env:-development} tsx watch src/main.ts",
+    build: "tsup src/main.ts",
+    start: "node dist/main.js",
+    "db:up": "docker-compose -f 'docker-compose.yml' up -d --build 'postgis'",
+    "db:down": "docker-compose -f 'docker-compose.yml' down",
     "docker:dev": "npm run docker:build:dev && npm run docker:run:dev",
     "docker:run:dev": "docker run --rm -it -p 3001:3001 --name $npm_package_name -v ./:/app $npm_package_name:dev",
     "docker:build:dev": "docker build --target development -t $npm_package_name:dev -f Dockerfile .",
     "docker:prod": "npm run docker:build:prod && npm run docker:run:prod",
     "docker:run:prod": "docker run -d $npm_package_name:prod",
     "docker:build:prod": "docker build --target production -t $npm_package_name:prod -f Dockerfile .",
-    "docker:db:up": "docker-compose -f 'docker-compose.yml' up -d --build 'postgis'",
-    "docker:db:down": "docker-compose -f 'docker-compose.yml' down",
   },
   prettier: {
     semi: true,
@@ -54,12 +54,15 @@ export const settings = {
   gitignore: "node_modules\ndist\ncoverage\n# Keep environment variables out of version control\n.env.production\n",
   editorSettings: {
     "editor.formatOnSave": true,
+    "editor.tabSize": 2,
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "always",
+      "source.removeUnusedImports": "always"
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-      Dockerfile: "Docker*, docker*, .docker*",
+      "Dockerfile": "Docker*, docker*, .docker*",
       ".env.development": ".env*",
       "tsconfig.json": "tsconfig*, jest*, eslint*, .eslint*, prettier*, .prettier*",
       "package.json": ".nvmrc, package*, yarn*, pnpm*, bun*, .git*, jsconfig*, config*",
@@ -68,9 +71,9 @@ export const settings = {
   compilerOptions: {
     target: "ES2024",
     outDir: "./dist",
-    module: "nodenext",
     esModuleInterop: true,
     strictNullChecks: true,
+    module: "nodenext",
     baseUrl: ".",
     paths: {
       "@/*": ["./src/*"],
