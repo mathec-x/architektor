@@ -162,8 +162,14 @@ program
   .argument("[filename]", "filename to create", String)
   .description("Add a framework to the project")
   .option("-v, --verbose", "Print more information")
-  .action(async (framework, filename) => {
-    await executors.add(framework, filename);
+  .option("-e, --ext <string>", "Change extension", "ts")
+  .option("-d, --dir <string>", "Sub directory")
+  .option("-k, --kebab", "Format filename to kebab-case")
+  .option("-c, --camel", "Format filename to camelCase")
+  .option("-p, --pascal", "Format filename to PascalCase")
+  .option("-s, --single", "Format filename to single name (no format)")
+  .action(async (framework, filename, options) => {
+    await executors.add(framework, filename, options);
     exit(0);
   });
 

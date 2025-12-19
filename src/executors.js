@@ -1,6 +1,7 @@
 import { exit } from "process";
 import { prompts } from "./constants.js";
 import { Logger, styled } from "./logger.js";
+import { join } from "path";
 
 export class Executors {
 	/**
@@ -50,15 +51,21 @@ export class Executors {
 	/**
 	 * @param {string} framework
 	 * @param {string} [filename]
+	 * @param {Object} [options={}]
+	 * @param {string} [options.ext="ts"]
+	 * @param {string} [options.dir=""]
+	 * @param {boolean} [options.kebab=false]
+	 * @param {boolean} [options.camel=false]
+	 * @param {boolean} [options.pascal=false]
 	*/
-	async add(framework, filename) {
+	async add(framework, filename, options) {
 		console.clear();
 		const nodeVersion = this.prompt.spawn("node", ["--version"]);
 		this.logger.info(`Node version: ${nodeVersion} - Add`);
 		this.logger.verbose(`Preparing [${styled("yellow", framework)}] ${filename || ""}`);
 
 		if (filename) {
-			await this.smartCreateFile(framework, filename);
+			await this.smartCreateFile(framework, filename, options);
 			return;
 		}
 
@@ -108,16 +115,23 @@ export class Executors {
 	/**
 	 * @param {string} moduleName
 	 * @param {string} filename
+	 * @param {Object} [options={}]
+	 * @param {string} [options.ext="ts"]
+	 * @param {string} [options.dir=""]
+	 * @param {boolean} [options.kebab=false]
+	 * @param {boolean} [options.camel=false]
+	 * @param {boolean} [options.pascal=false]
+	 * @param {boolean} [options.single=false]
 	 * 
 	 * @description Smart create a file inside a detected folder structure
 	 * npx tsna add service userService
 	 */
-	async smartCreateFile(moduleName, filename) {
+	async smartCreateFile(moduleName, filename, { ext = "ts", dir = "", ...format } = {}) {
 		this.logger.debug(`Scan for a directory matching: '${moduleName}' (${filename})`);
 		await this.prompt.delay(655);
 		const list = this.fileManager.scandir("src", moduleName);
 
-		const currentFolder = (list.size() > 1)
+		let currentFolder = (list.size() > 1)
 			? await this.prompt.select(`Found these directories matching '${moduleName}', select one to use:`, list.all())
 			: list.first();
 
@@ -126,8 +140,9 @@ export class Executors {
 			exit(0);
 		}
 
+		currentFolder = join(currentFolder, dir);
 		this.logger.info(`Selected directory: ${currentFolder}`);
-		const { fileNotation, testNotation } = this.getFileNotationFromDir(currentFolder);
+		const { fileNotation, testNotation } = this.getFileNotationFromDir(currentFolder, format);
 		const { fnName, className } = this.structFromArgs(filename, moduleName);
 		this.logger.verbose(`function Name: ${fnName}, Class Name: ${className}`);
 
@@ -142,14 +157,15 @@ export class Executors {
 		const fileNameFormatted = {
 			kebabCase: this.words.kebabCase(className, moduleName),
 			camelCase: this.words.camelCase(className),
-			pascalCase: this.words.pascalCase(className)
+			pascalCase: this.words.pascalCase(className),
+			singleCase: filename
 		};
 
 		const willCreate = {
 			dir: createDir,
 			testDir: hasTestFolder ? `${createDir}/__tests__/` : null,
-			main: `${createDir}/${fileNameFormatted[fileNotation]}.ts`,
-			spec: `${createDir}/${hasTestFolder ? "__tests__/" : ""}${fileNameFormatted[fileNotation]}.${testNotation}.ts`,
+			main: `${createDir}/${fileNameFormatted[fileNotation]}.${ext}`,
+			spec: `${createDir}/${hasTestFolder ? "__tests__/" : ""}${fileNameFormatted[fileNotation]}.${testNotation}.${ext}`,
 		};
 
 		await this.prompt.delay(555);
@@ -167,7 +183,17 @@ export class Executors {
 			this.fileManager.makeDirIfNotExists(willCreate.testDir);
 		}
 
-		if (["factory", "factories"].includes(moduleName.toLowerCase())) {
+		if (["tsx", "jsx"].includes(ext)) {
+			const name = this.words.pascalCase(fnName);
+			this.fileManager.makeFileIfNotExists(willCreate.main,
+				`function ${name}() {\n`,
+				"	return (",
+				`		<div>${fnName}</div>`,
+				"	)",
+				"}\n",
+				`export default ${name};\n`
+			);
+		} else if (["factory", "factories"].includes(moduleName.toLowerCase())) {
 			const name = this.words.pascalCase(fnName);
 			this.fileManager.makeFileIfNotExists(willCreate.main,
 				`// create controller: npx tsna add controller ${fnName}`,
@@ -221,20 +247,27 @@ export class Executors {
 
 	/** 
 	 * @param {string} path 
+	 * @param {Object} [force={}]
+	 * @param {boolean} [force.kebab=false]
+	 * @param {boolean} [force.camel=false]
+	 * @param {boolean} [force.pascal=false]
+	 * @param {boolean} [force.single=false]
 	 * @return {{
 	 * 	testNotation?: 'spec' | 'test'; 
-	 * 	fileNotation?: 'camelCase' | 'kebabCase' | 'pascalCase'
+	 * 	fileNotation?: 'camelCase' | 'kebabCase' | 'pascalCase' | 'singleCase'
 	 * }}
 	*/
-	getFileNotationFromDir(path) {
+	getFileNotationFromDir(path, force) {
 		const acc = this.fileManager.scandir(path, null, "isFile").analizeFileNotation();
 		this.logger.debug("Notation by tests", acc.testNotation);
 		this.logger.debug("Notation by title", acc.fileNotation);
 		return {
 			testNotation: (acc.testNotation.spec < acc.testNotation.test) ? "test" : "spec",
-			fileNotation: acc.fileNotation.kebabCase >= acc.fileNotation.camelCase
-				? (acc.fileNotation.kebabCase >= acc.fileNotation.pascalCase ? "kebabCase" : "pascalCase")
-				: (acc.fileNotation.camelCase >= acc.fileNotation.pascalCase ? "camelCase" : "pascalCase")
+			fileNotation:
+				force.single ? "singleCase" : force.camel ? "camelCase" : force.kebab ? "kebabCase" : force.pascal ? "pascalCase"
+					: acc.fileNotation.kebabCase >= acc.fileNotation.camelCase
+						? (acc.fileNotation.kebabCase >= acc.fileNotation.pascalCase ? "kebabCase" : "pascalCase")
+						: (acc.fileNotation.camelCase >= acc.fileNotation.pascalCase ? "camelCase" : "pascalCase")
 		};
 	}
 }
