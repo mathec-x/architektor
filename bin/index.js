@@ -10,6 +10,8 @@ import { Logger } from "#core/logger";
 import { Prompt } from "#core/prompt";
 import { Command } from "commander";
 import { argv, exit } from "process";
+import { DeepSchema } from "#core/deepSchema";
+import { FetchJson } from "#core/fetchJson";
 
 const name = "ts-node-app";
 const version = "0.0.1";
@@ -19,7 +21,9 @@ const prompt = new Prompt();
 const words = new Word();
 const fileSystem = new FileSystem(fileManager);
 const installers = new Installers(fileManager, prompt);
-const executors = new Executors(fileManager, installers, prompt, words);
+const deepSchema = new DeepSchema();
+const fetchJson = new FetchJson();
+const executors = new Executors(fileManager, installers, prompt, words, deepSchema, fetchJson);
 const program = new Command(name);
 
 if (argv.includes("-v") || argv.includes("--verbose")) {
@@ -240,6 +244,23 @@ program
 
     logger.printUsageHints();
     logger.logGroupEnd();
+    exit(0);
+  });
+
+program
+  .command("interface")
+  .argument("[path]", "url or path", String)
+  .description("Detects an object's interface by URL or file.")
+  .option("-H, --header <header...>", "Pass custom header(s) to server",
+    (value, previous = {}) => {
+      const [key, ...rest] = value.split(":");
+      previous[key.trim()] = rest.join(":").trim();
+      return previous;
+    }, {})
+  .option("-v, --verbose", "Print more information")
+  .version(version)
+  .action(async (path, options) => {
+    await executors.getInterface(path, options);
     exit(0);
   });
 

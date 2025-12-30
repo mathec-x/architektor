@@ -1,7 +1,7 @@
 import { exit } from "process";
 import { prompts } from "./constants.js";
 import { Logger, styled } from "./logger.js";
-import { join } from "path";
+import { parse, join } from "path";
 
 export class Executors {
 	/**
@@ -9,13 +9,17 @@ export class Executors {
 	 * @param {Installers} installers
 	 * @param {Prompt} prompt
 	 * @param {Words} words
+	 * @param {DeepSchema} deepSchema
+	 * @param {FetchJson} fetchJson
 	 */
-	constructor(fileManager, installers, prompt, words) {
+	constructor(fileManager, installers, prompt, words, deepSchema, fetchJson) {
 		this.logger = new Logger(Executors.name);
 		this.fileManager = fileManager;
 		this.installers = installers;
 		this.prompt = prompt;
 		this.words = words;
+		this.deepSchema = deepSchema;
+		this.fetchJson = fetchJson;
 	}
 
 	async init() {
@@ -109,6 +113,41 @@ export class Executors {
 			default:
 				this.logger.error("Invalid framework:", framework);
 				break;
+		}
+	}
+
+	/**
+	 * @param {string} path
+	 * @param {object} options
+	 * @param {object} options.header
+	 */
+	async getInterface(path, options) {
+		let content;
+		let name;
+
+		try {
+			if (this.fetchJson.isURL(path)) {
+				const url = new URL(path);
+				name = url.pathname.split("/").pop()?.replace(".json", "") || "RemoteSchema";
+				// Node 18+
+				content = await this.fetchJson.execute(path, options.header);
+				// ou, legacy:
+				// content = await fetchJsonLegacy(path);
+			} else {
+				if (!this.fileManager.isFile(path)) {
+					this.logger.error(`File not found: ${path}`);
+					return;
+				}
+
+				const parsed = parse(path);
+				name = parsed.name;
+				content = this.fileManager.readJsonFile(path);
+			}
+
+			this.deepSchema.logSchemaInterface(content.data, name);
+
+		} catch (err) {
+			this.logger.error(`Failed to load schema: ${err.message}`);
 		}
 	}
 
@@ -277,4 +316,6 @@ export class Executors {
  * @typedef {import("./prompt.js").Prompt} Prompt
  * @typedef {import("./installers.js").Installers} Installers
  * @typedef {import("./word.js").Word} Words
+ * @typedef {import("./deepSchema.js").DeepSchema} DeepSchema
+ * @typedef {import("./fetchJson.js").FetchJson} FetchJson
  */
